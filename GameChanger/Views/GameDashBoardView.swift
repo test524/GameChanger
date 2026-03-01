@@ -52,12 +52,9 @@ struct ScoringView: View {
     var body: some View {
         //let _ = Self._printChanges()
         GeometryReader { geo in
-            
                 ZStack {
-                    
                     let players = vm.gameState.basePlayers
                     //let homeIndices = players.indices.filter { players[$0].base == .scored }
-                    
                     //Player layout
                     ForEach(players.indices, id: \.self) { i in
                         let player = players[i]
