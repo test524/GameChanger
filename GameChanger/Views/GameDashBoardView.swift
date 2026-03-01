@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct GameDashBoardView: View {
     @StateObject private var viewModel = GameViewModel()
@@ -17,45 +18,182 @@ struct GameDashBoardView: View {
     }
 }
 
-#Preview {
-    GameDashBoardView()
+extension ScoringView {
+    @ViewBuilder
+    func basesView(geo: GeometryProxy) -> some View {
+        Group {
+            BaseMarker().position(position(for: .home, geo: geo))
+            BaseMarker().position(position(for: .first, geo: geo))
+            BaseMarker().position(position(for: .second, geo: geo))
+            BaseMarker().position(position(for: .third, geo: geo))
+            BaseMarker().position(position(for: .scored, geo: geo))
+        }
+    }
 }
 
-struct ScoreCardView: View {
-    @ObservedObject var vm: GameViewModel
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-            .fill(.red)
-            .overlay {
-                VStack{
-                    Text("Balls: \(vm.gameState.balls)")
-                    Text("Strikes: \(vm.gameState.strikes)")
+extension ScoringView {
+    @ViewBuilder
+    func playersView(geo: GeometryProxy) -> some View {
+        let players = vm.gameState.basePlayers
+        
+        ForEach(players.indices, id: \.self) { i in
+            let player = players[i]
+            PlayerView(player: player)
+                .position(self.getPoint(i: i, player: player, geo: geo))
+                .offset(dragOffsets[player.id] ?? .zero)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            dragOffsets[player.id] = value.translation
+                            
+                            let start = position(for: player.base, geo: geo)
+                            let current = CGPoint(
+                                x: start.x + value.translation.width,
+                                y: start.y + value.translation.height
+                            )
+                            
+                            hoverPlayerID = player.id
+                            hoverBase = nearestBase(to: current, geo: geo)
+                        }
+                        .onEnded { value in
+                            handleDrop(player: player, value: value, geo: geo)
+                        }
+                ).zIndex(hoverPlayerID != nil ? 1 : 0)
+        }
+        
+        ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) {safeOutIndex in
+            Color.black .opacity(0.4) .ignoresSafeArea(.all)
+            let player = players[safeOutIndex]
+            SafeOutView(vm: vm, player: player)
+                .zIndex(1) .position(positionForSafeOut(for: player.base, geo: geo))
+        }
+        
+    }
+}
+
+extension ScoringView {
+    
+    func handleDrop(player: Player,
+                    value: DragGesture.Value,
+                    geo: GeometryProxy) {
+        
+        let start = position(for: player.base, geo: geo)
+        let dropPoint = CGPoint(
+            x: start.x + value.translation.width,
+            y: start.y + value.translation.height
+        )
+    
+        // Check popup overlap
+        print("safeFrame:", decisionFrames[.safe] ?? .zero)
+        print("dropPoint:", dropPoint)
+        
+        if let safeFrame = decisionFrames[.safe],
+           safeFrame.contains(dropPoint) {
+            vm.safeOutPerform(for: player, decision: .safe)
+        }
+        else if let outFrame = decisionFrames[.out],
+                outFrame.contains(dropPoint) {
+            vm.safeOutPerform(for: player, decision: .out)
+        }
+        else {
+            // normal base move
+            let nearest = nearestBase(to: dropPoint, geo: geo)
+            if let idx = vm.gameState.basePlayers.firstIndex(where: { $0.id == player.id }) {
+                withAnimation {
+                    vm.gameState.basePlayers[idx].base = nearest
                 }
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-                .foregroundColor(.white)
             }
         }
-        .background(Color.red)
-        .frame(maxWidth:.infinity,maxHeight: 180)
+        
+        dragOffsets[player.id] = .zero
+        hoverPlayerID = nil
+        hoverBase = nil
+    }
+}
+
+extension ScoringView {
+    @ViewBuilder
+    func decisionPopup(geo: GeometryProxy) -> some View {
+        if  let hoverID = hoverPlayerID,
+              let base = hoverBase,
+              let player = vm.gameState.basePlayers.first(where: { $0.id == hoverID })
+        {
+            VStack(spacing: 6) {
+                decisionButton(.safe)
+                decisionButton(.out)
+            }
+            .padding(6)
+            .background(.thinMaterial)
+            .cornerRadius(10)
+            .position(position(for: base, geo: geo))
+            //.zIndex(10)
+        }
+    }
+    
+    func decisionButton(_ decision: SafeOutDecision) -> some View {
+        Text(decision == .safe ? "Safe" : "Out")
+            .font(.headline)
+            .foregroundColor(.white)
+            .frame(width: 120, height: 50)
+            .background(decision == .safe ? Color.green : Color.red)
+            .cornerRadius(8)
+            .background(
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            decisionFrames[decision] = geo.frame(in: .named("field")) //geo.frame(in: .global)
+                        }
+                        .onChange(of: geo.frame(in: .named("field"))) { new in
+                            decisionFrames[decision] = new
+                        }
+                }
+            )
     }
 }
 
 struct ScoringView: View {
     
     @ObservedObject var vm: GameViewModel
-    @State private var showOptions = false
-    @State private var selectedOption:GameAction?
+    
     @State private var dragOffsets: [UUID: CGSize] = [:]
+    @State private var hoverPlayerID: UUID?
+    @State private var hoverBase: Base?
+    
+    @State private var showOptions = false
+    
+    // popup frames
+    @State private var decisionFrames: [SafeOutDecision: CGRect] = [:]
     
     var body: some View {
         //let _ = Self._printChanges()
         GeometryReader { geo in
                 ZStack {
+                    basesView(geo: geo)
+                    playersView(geo: geo)
+                    decisionPopup(geo: geo)
+                    optionSelection()
+                    .fullScreenCover(isPresented: $showOptions) {
+                        GameOptionsView(vm: vm)
+                        .presentationBackground(Color.black.opacity(0.3))
+                    }
+                    
+                    /*
+                    // Dummy base markers
+                    Group {
+                        BaseMarker()
+                            .position(position(for: .home, geo: geo))
+                        BaseMarker()
+                            .position(position(for: .first, geo: geo))
+                        BaseMarker()
+                            .position(position(for: .second, geo: geo))
+                        BaseMarker()
+                            .position(position(for: .third, geo: geo))
+                        BaseMarker()
+                            .position(position(for: .scored, geo: geo))
+                    }
+                    //Player layout
                     let players = vm.gameState.basePlayers
                     //let homeIndices = players.indices.filter { players[$0].base == .scored }
-                    //Player layout
                     ForEach(players.indices, id: \.self) { i in
                         let player = players[i]
                         let homeOffset = getPoint(i: i, player: player, geo: geo)
@@ -67,6 +205,15 @@ struct ScoringView: View {
                                     .onChanged { value in
                                         // Update the temporary offset so the token follows the finger
                                         dragOffsets[player.id] = value.translation
+                                        // Compute hovered base during drag for live hover UI
+                                        let start = position(for: player.base, geo: geo)
+                                        let currentPoint = CGPoint(
+                                            x: start.x + value.translation.width,
+                                            y: start.y + value.translation.height
+                                        )
+                                        let hovered = nearestBase(to: currentPoint, geo: geo)
+                                        hoverPlayerID = player.id
+                                        hoverBase = hovered
                                     }
                                     .onEnded { value in
                                         let position = position(for: player.base, geo: geo)
@@ -84,19 +231,36 @@ struct ScoringView: View {
                                         withAnimation {
                                             dragOffsets[player.id] = .zero
                                         }
+                                        //withAnimation {
+                                        hoverPlayerID = nil
+                                        hoverBase = nil
+                                        //}
                                     }
                             )
-                            /*.gesture (
-                                DragGesture(coordinateSpace: .global)
-                                    .onChanged { value in
-                                        dragOffsets[player.id] = value.translation
-                                    }
-                                    .onEnded { value in
-                                        withAnimation {
-                                            dragOffsets[player.id] = .zero
-                                        }
-                                    }
-                            ).zIndex(player.isSafeOutRequired  ? 1 : 0)*/
+                    }
+                    
+                    if let hoverID = hoverPlayerID,
+                       let base = hoverBase,
+                       let hoveredPlayer = vm.gameState.basePlayers.first(where: { $0.id == hoverID }) {
+                        VStack(spacing: 4) {
+                            DecisionDropView(decision: .safe) {
+                                vm.safeOutPerform(for: hoveredPlayer, decision: .safe)
+                                withAnimation { hoverPlayerID = nil; hoverBase = nil }
+                            }
+                            DecisionDropView(decision: .out) {
+                                vm.safeOutPerform(for: hoveredPlayer, decision: .safe)
+                                withAnimation { hoverPlayerID = nil; hoverBase = nil }
+                            }
+                        }
+                        .padding(2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color(.systemBackground))
+                                .shadow(radius: 3)
+                        )
+                        .position(position(for: base, geo: geo))
+                        .transition(.scale.combined(with: .opacity))
+                        .zIndex(1)
                     }
                     
                     ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { safeOutIndex in
@@ -114,14 +278,14 @@ struct ScoringView: View {
                             GameOptionsView(vm: vm)
                             .presentationBackground(Color.black.opacity(0.3))
                     }
-                }
+                    */
+                }.coordinateSpace(name: "field")
             
         }.onAppear {
-            //print("@@@@onAppear@@@@")
             if vm.gameState.basePlayers.isEmpty {
                     self.vm.addHomePlayer()
             }
-        }//.coordinateSpace(name: "PlayArea")
+        }
     }
     
     @ViewBuilder
@@ -135,6 +299,9 @@ struct ScoringView: View {
         }.zIndex(-1)
     }
     
+}
+
+extension ScoringView {
     func getPoint(i:Int,player:Player,geo:GeometryProxy) -> CGPoint {
         let players = vm.gameState.basePlayers
         let homeIndices = players.indices.filter { players[$0].base == .scored }
@@ -150,6 +317,8 @@ struct ScoringView: View {
             x: geo.size.width / 2,
             y: geo.size.height / 2
         )
+        print("Width:",geo.size.width)
+        print("Height:",geo.size.height)
         let r = min(geo.size.width, geo.size.height) * 0.31
         switch base {
         case .second:
@@ -190,172 +359,11 @@ struct ScoringView: View {
     }
 }
 
-struct GameOptionsView: View {
+struct FramePreferenceKey: PreferenceKey {
+    static var defaultValue: [String: CGRect] = [:]
     
-    @ObservedObject var vm:GameViewModel
-    @Environment(\.dismiss) var dismiss
-    
-    var body: some View {
-        NavigationStack {
-            VStack(spacing:1) {
-                ForEach(GameAction.allCases, id: \.self) { option in
-                    HStack {
-                        Button(option.rawValue) {
-                            dismiss()
-                            self.selectedOption(option: option)
-                        }
-                        Spacer()
-                    }.frame(maxWidth:.infinity)
-                     .frame(height:50)
-                    .padding(.leading,16)
-                    .background(Color.gray.opacity(0.2))
-                }
-            }
-        }
-        .frame(width: 260)
-        .frame(height: CGFloat(GameAction.allCases.count) * 50)
-        .background(Color.white)
-        .cornerRadius(12)
-        .shadow(radius: 1)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .ignoresSafeArea()
-    }
-    
-    func selectedOption(option:GameAction) {
-        vm.gameState.gameAction = option
-        Task{
-            try? await Task.sleep(for: .seconds(0.5))
-            vm.perform(option)
-        }
-    }
-    
-}
-
-struct PlayerView : View {
-    let player: Player
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 4)
-                .fill(player.color)
-            Text(player.name)
-            .clipped()
-        }
-        .frame(width: 60, height: 60)
+    static func reduce(value: inout [String: CGRect],
+                       nextValue: () -> [String: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
     }
 }
-
-enum Tab: String, CaseIterable {
-    case Score = "Scoring"
-    case MyTeam = "MyTeam"
-    case Opponent = "Opponent"
-    case PlayByPlay = "PlayByPlay"
-    case BoxScore = "BoxScore"
-}
-
-struct CustomTabView: View {
-
-    @State private var selectedTab: Tab = .Score
-    @ObservedObject var vm: GameViewModel
-
-    var body: some View {
-        VStack(spacing: 0) {
-            CustomTabBar(selectedTab: $selectedTab)
-            // Content
-            Group {
-                switch selectedTab {
-                case .Score:
-                    ScoringView(vm: vm)
-                case .MyTeam:
-                    MyTeamView()
-                case .Opponent:
-                    OpponentTeamView()
-                case .PlayByPlay:
-                    LoginView()
-                case .BoxScore:
-                    Text("Box Score").font(.largeTitle)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .environmentObject(vm)
-        }//.background(.yellow)
-        
-    }
-}
-
-struct CustomTabBar : View {
-    
-    @Binding var selectedTab: Tab
-    @Namespace private var nameSpace
-    
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Tab.allCases, id: \.self) { tab in
-                VStack(spacing: 0) {
-                    Button {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                            selectedTab = tab
-                        }
-                    } label: {
-                        Text(tab.rawValue)
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundColor(selectedTab == tab ? .blue : .gray)
-                            .frame(maxWidth: .infinity, minHeight: 45)
-                    }
-                    if selectedTab == tab {
-                        Capsule()
-                            .fill(Color.red)
-                            .frame(height: 2)
-                            .matchedGeometryEffect(id: "TAB", in: nameSpace)
-                    } else {
-                        Capsule()
-                            .fill(Color.clear)
-                            .frame(height: 2)
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-        .background(Color.white)
-    }
-    
-}
-
-struct SafeOutView: View {
-    //let onDecision: (SafeOutDecision) -> Void
-    @ObservedObject var vm: GameViewModel
-    var player:Player
-    var body: some View {
-        HStack(spacing: 0) {
-           Button{
-               //onDecision(.safe)
-               safeOut(onDecision: .safe)
-           } label: {
-               Text("Safe")
-                   .foregroundStyle(Color.white)
-                   .padding(.horizontal,20)
-                   .padding(.vertical,10)
-                   .background(Color.green)
-           }
-            Button{
-                //onDecision(.out)
-                safeOut(onDecision: .out)
-            } label: {
-                Text("Out")
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal,20)
-                    .padding(.vertical,10)
-                    .background(Color.red)
-            }
-        }
-        //.padding(8)
-        //.background(.white)
-        .cornerRadius(4)
-    }
-    
-    func safeOut(onDecision: SafeOutDecision) {
-        vm.safeOutPerform(for: player, decision: onDecision)
-        //resolveSafeOutDecision(for: player, decision: onDecision)
-    }
-    
-}
-
