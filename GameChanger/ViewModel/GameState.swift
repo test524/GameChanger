@@ -51,19 +51,4 @@ struct GameState {
         strikes = 0
     }
     
-    mutating func nextBatter() {
-                
-        currentOrder += 1
-        if currentOrder >= basePlayers.count {
-            currentOrder = 0
-        }
-        
-        if var newPlayer = self.players.filter({$0.order == currentOrder}).first {
-            print("New home base player added \(newPlayer.name)")
-            newPlayer.base = .home
-            basePlayers.append(newPlayer)
-        }
-        
-    }
-    
 }

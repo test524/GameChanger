@@ -47,10 +47,7 @@ struct ScoringView: View {
     @ObservedObject var vm: GameViewModel
     @State private var showOptions = false
     @State private var selectedOption:GameAction?
-
     @State private var dragOffsets: [UUID: CGSize] = [:]
-    
-    
     
     var body: some View {
         //let _ = Self._printChanges()
@@ -67,9 +64,32 @@ struct ScoringView: View {
                         let homeOffset = getPoint(i: i, player: player, geo: geo)
                         PlayerView(player: player)
                             .position(homeOffset)
-                            .zIndex(player.isSafeOutRequired  ? 1 : 0)
                             .offset(dragOffsets[player.id] ?? .zero)
-                            .gesture (
+                            .gesture(
+                                DragGesture(coordinateSpace: .local)
+                                    .onChanged { value in
+                                        // Update the temporary offset so the token follows the finger
+                                        dragOffsets[player.id] = value.translation
+                                    }
+                                    .onEnded { value in
+                                        let position = position(for: player.base, geo: geo)
+                                        let dropPoint = CGPoint(
+                                            x: position.x + value.translation.width,
+                                            y: position.y + value.translation.height
+                                        )
+                                        let nearest = nearestBase(to: dropPoint, geo: geo)
+                                        if let idx = vm.gameState.basePlayers.firstIndex(where: { $0.id == player.id }) {
+                                            withAnimation {
+                                                vm.gameState.basePlayers[idx].base = nearest
+                                            }
+                                        }
+                                        // Clear the temporary offset
+                                        withAnimation {
+                                            dragOffsets[player.id] = .zero
+                                        }
+                                    }
+                            )
+                            /*.gesture (
                                 DragGesture(coordinateSpace: .global)
                                     .onChanged { value in
                                         dragOffsets[player.id] = value.translation
@@ -79,7 +99,7 @@ struct ScoringView: View {
                                             dragOffsets[player.id] = .zero
                                         }
                                     }
-                            )
+                            ).zIndex(player.isSafeOutRequired  ? 1 : 0)*/
                     }
                     
                     ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { safeOutIndex in
@@ -106,7 +126,6 @@ struct ScoringView: View {
             }
         }//.coordinateSpace(name: "PlayArea")
     }
-    
     
     @ViewBuilder
     func optionSelection() -> some View {
@@ -147,7 +166,6 @@ struct ScoringView: View {
         }
     }
     
-    
     func positionForSafeOut(for base: Base, geo: GeometryProxy) -> CGPoint {
         let point = self.position(for: base, geo: geo)
         switch base {
@@ -156,6 +174,22 @@ struct ScoringView: View {
         case .home,.scored:
             return CGPoint(x: point.x, y: point.y + 58)
         }
+    }
+    
+    func nearestBase(to point: CGPoint, geo: GeometryProxy) -> Base {
+        let positions: [(Base, CGPoint)] = [
+            (.home, position(for: .home, geo: geo)),
+            (.first, position(for: .first, geo: geo)),
+            (.second, position(for: .second, geo: geo)),
+            (.third, position(for: .third, geo: geo)),
+            (.scored, position(for: .scored, geo: geo))
+        ]
+        let nearest = positions.min { lhs, rhs in
+            let dl = hypot(lhs.1.x - point.x, lhs.1.y - point.y)
+            let dr = hypot(rhs.1.x - point.x, rhs.1.y - point.y)
+            return dl < dr
+        }
+        return nearest?.0 ?? .home
     }
 }
 
