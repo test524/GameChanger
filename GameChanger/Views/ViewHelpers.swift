@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Foundation
-import UniformTypeIdentifiers
 
 
 struct ScoreCardView: View {
@@ -44,7 +43,13 @@ struct CustomTabView: View {
             Group {
                 switch selectedTab {
                 case .Score:
-                    ScoringView(vm: vm)
+                    VStack(spacing:0) {
+                        Rectangle()
+                            .foregroundStyle(Color.yellow)
+                            .frame(maxWidth:.infinity)
+                            .frame(height:40)
+                        ScoringView(vm: vm)
+                    }
                 case .MyTeam:
                     MyTeamView()
                 case .Opponent:
@@ -227,10 +232,5 @@ struct DecisionDropView: View {
             .frame(width: 100, height: 100)
             .background(decision == .safe ? Color.green : Color.red)
             .cornerRadius(8)
-            .onDrop(of: [UTType.text], isTargeted: nil) { providers in
-                print("@@@@@@onDrop")
-                action()
-                return true
-            }//.zIndex(10)
     }
 }

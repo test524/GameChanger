@@ -21,7 +21,8 @@ final class GameViewModel : ObservableObject {
             SingleAdvanceRule(),
             DoubleAdvanceRule(),
             TripleAdvanceRule(),
-            FielderChoiceRule()
+            FielderChoiceRule(),
+            HitByPitch()
         ]
     )
     
@@ -63,6 +64,31 @@ final class GameViewModel : ObservableObject {
         return gameState.basePlayers.first(where: { $0.base == .scored }) == nil &&
                gameState.basePlayers.first(where: { $0.base == .home }) == nil
         
+    }
+    
+    func endInning() {
+        // TODO: Implement end inning logic (e.g., reset bases, increment inning, switch teams)
+        print("End Inning tapped")
+    }
+
+    func skip() {
+        // TODO: Implement skip logic (e.g., skip to next batter or next play)
+        print("Skip tapped")
+    }
+
+    func repeatLastAction() {
+        // TODO: Implement repeat-last-action logic
+        print("Repeat tapped")
+    }
+
+    func undo() {
+        // TODO: Implement undo logic (maintain history stack of game states)
+        print("Undo tapped")
+    }
+
+    func redo() {
+        // TODO: Implement redo logic (maintain history stack of game states)
+        print("Redo tapped")
     }
 
 }

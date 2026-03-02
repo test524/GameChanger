@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct GameDashBoardView: View {
     @StateObject private var viewModel = GameViewModel()
@@ -17,6 +16,62 @@ struct GameDashBoardView: View {
         }
     }
 }
+
+struct ScoringView: View {
+    
+    @ObservedObject var vm: GameViewModel
+    
+    @State private var dragOffsets: [UUID: CGSize] = [:]
+    @State private var hoverPlayerID: UUID?
+    @State private var hoverBase: Base?
+    
+    @State private var showOptions = false
+    
+    // popup frames
+    @State private var decisionFrames: [SafeOutDecision: CGRect] = [:]
+    
+    var body: some View {
+        GeometryReader { geo in
+                ZStack {
+                    basesView(geo: geo)
+                    playersView(geo: geo)
+                    optionSelection()
+                    decisionPopup(geo: geo)
+                }.coordinateSpace(name: "field")
+        }
+        .onAppear {
+            if vm.gameState.basePlayers.isEmpty {
+                    self.vm.addHomePlayer()
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            bottomBar()
+        }
+        .overlay {
+            if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
+                Color.black.opacity(0.4).allowsHitTesting(true)
+                    .ignoresSafeArea()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func optionSelection() -> some View {
+        Button {
+            showOptions.toggle()
+        }label: {
+            Image(systemName: "cricket.ball.circle.fill")
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+        }.zIndex(-1)
+        .fullScreenCover(isPresented: $showOptions) {
+            GameOptionsView(vm: vm)
+            .presentationBackground(Color.black.opacity(0.3))
+        }
+    }
+    
+}
+
 
 extension ScoringView {
     @ViewBuilder
@@ -36,6 +91,10 @@ extension ScoringView {
     func playersView(geo: GeometryProxy) -> some View {
         let players = vm.gameState.basePlayers
         
+        Image("baseball")
+            .resizable()
+            .scaledToFill()
+
         ForEach(players.indices, id: \.self) { i in
             let player = players[i]
             PlayerView(player: player)
@@ -58,14 +117,13 @@ extension ScoringView {
                         .onEnded { value in
                             handleDrop(player: player, value: value, geo: geo)
                         }
-                ).zIndex(hoverPlayerID != nil ? 1 : 0)
+                ).zIndex(hoverPlayerID == player.id ? 2 : 1)
         }
         
         ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) {safeOutIndex in
-            Color.black .opacity(0.4) .ignoresSafeArea(.all)
             let player = players[safeOutIndex]
             SafeOutView(vm: vm, player: player)
-                .zIndex(1) .position(positionForSafeOut(for: player.base, geo: geo))
+                .zIndex(3) .position(positionForSafeOut(for: player.base, geo: geo))
         }
         
     }
@@ -143,162 +201,15 @@ extension ScoringView {
                         .onAppear {
                             decisionFrames[decision] = geo.frame(in: .named("field")) //geo.frame(in: .global)
                         }
-                        .onChange(of: geo.frame(in: .named("field"))) { new in
-                            decisionFrames[decision] = new
+                        .onChange(of: geo.frame(in: .named("field")), initial: true) { oldState,newState   in
+                            decisionFrames[decision] = newState
                         }
+                        /*.onChange(of: geo.frame(in: .named("field"))) { new in
+                            decisionFrames[decision] = new
+                        }*/
                 }
             )
     }
-}
-
-struct ScoringView: View {
-    
-    @ObservedObject var vm: GameViewModel
-    
-    @State private var dragOffsets: [UUID: CGSize] = [:]
-    @State private var hoverPlayerID: UUID?
-    @State private var hoverBase: Base?
-    
-    @State private var showOptions = false
-    
-    // popup frames
-    @State private var decisionFrames: [SafeOutDecision: CGRect] = [:]
-    
-    var body: some View {
-        //let _ = Self._printChanges()
-        GeometryReader { geo in
-                ZStack {
-                    basesView(geo: geo)
-                    playersView(geo: geo)
-                    decisionPopup(geo: geo)
-                    optionSelection()
-                    .fullScreenCover(isPresented: $showOptions) {
-                        GameOptionsView(vm: vm)
-                        .presentationBackground(Color.black.opacity(0.3))
-                    }
-                    
-                    /*
-                    // Dummy base markers
-                    Group {
-                        BaseMarker()
-                            .position(position(for: .home, geo: geo))
-                        BaseMarker()
-                            .position(position(for: .first, geo: geo))
-                        BaseMarker()
-                            .position(position(for: .second, geo: geo))
-                        BaseMarker()
-                            .position(position(for: .third, geo: geo))
-                        BaseMarker()
-                            .position(position(for: .scored, geo: geo))
-                    }
-                    //Player layout
-                    let players = vm.gameState.basePlayers
-                    //let homeIndices = players.indices.filter { players[$0].base == .scored }
-                    ForEach(players.indices, id: \.self) { i in
-                        let player = players[i]
-                        let homeOffset = getPoint(i: i, player: player, geo: geo)
-                        PlayerView(player: player)
-                            .position(homeOffset)
-                            .offset(dragOffsets[player.id] ?? .zero)
-                            .gesture(
-                                DragGesture(coordinateSpace: .local)
-                                    .onChanged { value in
-                                        // Update the temporary offset so the token follows the finger
-                                        dragOffsets[player.id] = value.translation
-                                        // Compute hovered base during drag for live hover UI
-                                        let start = position(for: player.base, geo: geo)
-                                        let currentPoint = CGPoint(
-                                            x: start.x + value.translation.width,
-                                            y: start.y + value.translation.height
-                                        )
-                                        let hovered = nearestBase(to: currentPoint, geo: geo)
-                                        hoverPlayerID = player.id
-                                        hoverBase = hovered
-                                    }
-                                    .onEnded { value in
-                                        let position = position(for: player.base, geo: geo)
-                                        let dropPoint = CGPoint(
-                                            x: position.x + value.translation.width,
-                                            y: position.y + value.translation.height
-                                        )
-                                        let nearest = nearestBase(to: dropPoint, geo: geo)
-                                        if let idx = vm.gameState.basePlayers.firstIndex(where: { $0.id == player.id }) {
-                                            withAnimation {
-                                                vm.gameState.basePlayers[idx].base = nearest
-                                            }
-                                        }
-                                        // Clear the temporary offset
-                                        withAnimation {
-                                            dragOffsets[player.id] = .zero
-                                        }
-                                        //withAnimation {
-                                        hoverPlayerID = nil
-                                        hoverBase = nil
-                                        //}
-                                    }
-                            )
-                    }
-                    
-                    if let hoverID = hoverPlayerID,
-                       let base = hoverBase,
-                       let hoveredPlayer = vm.gameState.basePlayers.first(where: { $0.id == hoverID }) {
-                        VStack(spacing: 4) {
-                            DecisionDropView(decision: .safe) {
-                                vm.safeOutPerform(for: hoveredPlayer, decision: .safe)
-                                withAnimation { hoverPlayerID = nil; hoverBase = nil }
-                            }
-                            DecisionDropView(decision: .out) {
-                                vm.safeOutPerform(for: hoveredPlayer, decision: .safe)
-                                withAnimation { hoverPlayerID = nil; hoverBase = nil }
-                            }
-                        }
-                        .padding(2)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color(.systemBackground))
-                                .shadow(radius: 3)
-                        )
-                        .position(position(for: base, geo: geo))
-                        .transition(.scale.combined(with: .opacity))
-                        .zIndex(1)
-                    }
-                    
-                    ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { safeOutIndex in
-                        Color.black
-                            .opacity(0.4)
-                            .ignoresSafeArea(.all)
-                        let player = players[safeOutIndex]
-                        SafeOutView(vm: vm, player: player)
-                            .zIndex(1)
-                            .position(positionForSafeOut(for: player.base, geo: geo))
-                    }
-                    
-                    optionSelection()
-                    .fullScreenCover(isPresented: $showOptions) {
-                            GameOptionsView(vm: vm)
-                            .presentationBackground(Color.black.opacity(0.3))
-                    }
-                    */
-                }.coordinateSpace(name: "field")
-            
-        }.onAppear {
-            if vm.gameState.basePlayers.isEmpty {
-                    self.vm.addHomePlayer()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    func optionSelection() -> some View {
-        Button {
-            showOptions.toggle()
-        }label: {
-            Image(systemName: "cricket.ball.circle.fill")
-                .font(.largeTitle)
-                .fontWeight(.heavy)
-        }.zIndex(-1)
-    }
-    
 }
 
 extension ScoringView {
@@ -359,11 +270,45 @@ extension ScoringView {
     }
 }
 
-struct FramePreferenceKey: PreferenceKey {
-    static var defaultValue: [String: CGRect] = [:]
-    
-    static func reduce(value: inout [String: CGRect],
-                       nextValue: () -> [String: CGRect]) {
-        value.merge(nextValue(), uniquingKeysWith: { $1 })
+extension ScoringView {
+    @ViewBuilder
+    func bottomBar() -> some View {
+        HStack(spacing: 16) {
+            barButton(icon: "flag.checkered", title: "End") { vm.endInning() }
+            Spacer()
+            barButton(icon: "forward.end.fill", title: "Skip") { vm.skip() }
+            barButton(icon: "repeat", title: "Repeat") { vm.repeatLastAction() }
+            barButton(icon: "repeat", title: "Repeat") { vm.repeatLastAction() }
+            Spacer()
+            barButton(icon: "arrow.uturn.left", title: "Undo") { vm.undo() }
+            barButton(icon: "arrow.uturn.right", title: "Redo") { vm.redo() }
+        }
+        .frame(maxWidth:.infinity)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.ultraThickMaterial)
+        .disabled(vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }))
+    }
+
+    @ViewBuilder
+    func barButton(icon: String, title: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(width: 40, height: 40)
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color.orange))
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+            }
+        }
     }
 }
+
+#Preview {
+    GameDashBoardView()
+}
+

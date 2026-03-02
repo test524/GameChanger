@@ -10,10 +10,6 @@ import SwiftUI
 
 
 struct AddHomePlayerAction: GameRule {
-    func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel) {
-        
-    }
-    
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
         action == .single
     }

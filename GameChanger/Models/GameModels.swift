@@ -66,6 +66,7 @@ enum GameAction: String, CaseIterable {
     case double = "Double"
     case triple = "Triple"
     case fielderChoice = "Fielder's Choice"
+    case hitbyPitch = "HitByPitch"
 }
 
 

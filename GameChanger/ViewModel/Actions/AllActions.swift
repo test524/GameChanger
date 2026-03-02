@@ -10,7 +10,6 @@ import SwiftUI
 
 
 protocol GameRule {
-    func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel)
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool
     func execute(state: GameViewModel)
 }
@@ -29,8 +28,9 @@ struct RulesEngine {
     }
     func safeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel, action:GameAction) {
         for rule in rules {
-            if rule.applies(to: action, viewModel: state) {
-                rule.resolveSafeOutDecision(for: player, decision: decision, state: state)
+            if rule.applies(to: action, viewModel: state),
+               let decidable = rule as? SafeOutDecidable {
+                decidable.resolveSafeOutDecision(for: player, decision: decision, state: state)
             }
         }
     }
@@ -74,7 +74,7 @@ struct SingleAdvanceRule: GameRule, SafeOutDecidable {
 }
 
 
-struct DoubleAdvanceRule: GameRule {
+struct DoubleAdvanceRule: GameRule, SafeOutDecidable {
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
         action == .double
     }
@@ -117,7 +117,7 @@ struct DoubleAdvanceRule: GameRule {
 }
 
 
-struct TripleAdvanceRule: GameRule {
+struct TripleAdvanceRule: GameRule, SafeOutDecidable {
     
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
         action == .triple
@@ -167,7 +167,7 @@ struct TripleAdvanceRule: GameRule {
     
 }
 
-struct FielderChoiceRule: GameRule {
+struct FielderChoiceRule: GameRule, SafeOutDecidable {
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
         action == .fielderChoice
     }
@@ -235,8 +235,68 @@ struct BallActionRule: GameRule {
             }
         }
     }
-    func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel) {
-        
+}
+
+
+struct HitByPitch: GameRule {
+    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
+        action == .hitbyPitch
+    }
+    func execute(state: GameViewModel) {
+        // Determine current occupancy
+        let has1st = state.gameState.basePlayers.contains { $0.base == .first }
+        let has2nd = state.gameState.basePlayers.contains { $0.base == .second }
+        let has3rd = state.gameState.basePlayers.contains { $0.base == .third }
+
+        var didScore = false
+        withAnimation(.spring) {
+            if has1st && has2nd && has3rd {
+                // Bases loaded: force advance, runner from 3rd scores
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .third }) {
+                    state.gameState.basePlayers[thirdIndex].base = .scored
+                    didScore = true
+                }
+                if let secondIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .second }) {
+                    state.gameState.basePlayers[secondIndex].base = .third
+                }
+                if let firstIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    state.gameState.basePlayers[firstIndex].base = .second
+                }
+                if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[homeIndex].base = .first
+                }
+            } else if has1st && has2nd {
+                // Runners on 1st and 2nd: both advance one, batter to 1st
+                if let secondIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .second }) {
+                    state.gameState.basePlayers[secondIndex].base = .third
+                }
+                if let firstIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    state.gameState.basePlayers[firstIndex].base = .second
+                }
+                if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[homeIndex].base = .first
+                }
+            } else if has1st {
+                // Runner on 1st only: advance to 2nd, batter to 1st
+                if let firstIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    state.gameState.basePlayers[firstIndex].base = .second
+                }
+                if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[homeIndex].base = .first
+                }
+            } else {
+                // No runner on 1st: batter to 1st
+                if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[homeIndex].base = .first
+                }
+            }
+        } completion: {
+            if didScore {
+                state.removeHomePlayer()
+            }
+            // Bring in the next batter
+            state.addHomePlayer()
+        }
     }
 }
 
