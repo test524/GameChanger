@@ -26,7 +26,7 @@ struct ScoreCardView: View {
             }
         }
         .background(Color.red)
-        .frame(maxWidth:.infinity,maxHeight: 180)
+        .frame(maxWidth:.infinity,maxHeight: 160)
     }
 }
 

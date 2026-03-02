@@ -46,6 +46,7 @@ struct ScoringView: View {
         }
         .safeAreaInset(edge: .bottom) {
             bottomBar()
+                .offset(y:20)
         }
         .overlay {
             if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
@@ -63,7 +64,7 @@ struct ScoringView: View {
             Image(systemName: "cricket.ball.circle.fill")
                 .font(.largeTitle)
                 .fontWeight(.heavy)
-        }.zIndex(-1)
+        }//.zIndex(-1)
         .fullScreenCover(isPresented: $showOptions) {
             GameOptionsView(vm: vm)
             .presentationBackground(Color.black.opacity(0.3))
