@@ -33,7 +33,12 @@ struct ScoringView: View {
     var body: some View {
         GeometryReader { geo in
                 ZStack {
-                    basesView(geo: geo)
+                    Image("softball")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width:geo.size.width,height:geo.size.height)
+                        .ignoresSafeArea()
+                    //basesView(geo: geo)
                     playersView(geo: geo)
                     optionSelection()
                     decisionPopup(geo: geo)
@@ -46,7 +51,7 @@ struct ScoringView: View {
         }
         .safeAreaInset(edge: .bottom) {
             bottomBar()
-                .offset(y:20)
+            .offset(y:20)
         }
         .overlay {
             if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
@@ -92,9 +97,7 @@ extension ScoringView {
     func playersView(geo: GeometryProxy) -> some View {
         let players = vm.gameState.basePlayers
         
-        Image("baseball")
-            .resizable()
-            .scaledToFill()
+      
 
         ForEach(players.indices, id: \.self) { i in
             let player = players[i]
@@ -227,7 +230,7 @@ extension ScoringView {
     func position(for base: Base, geo: GeometryProxy) -> CGPoint {
         let center = CGPoint(
             x: geo.size.width / 2,
-            y: geo.size.height / 2
+            y: geo.size.height * 0.9
         )
         print("Width:",geo.size.width)
         print("Height:",geo.size.height)

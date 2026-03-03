@@ -87,6 +87,9 @@ struct GameOptionsView: View {
                      .frame(height:50)
                     .padding(.leading,16)
                     .background(Color.gray.opacity(0.2))
+                    .onTapGesture {
+                        dismiss()
+                    }
                 }
             }
         }
@@ -118,7 +121,7 @@ struct PlayerView : View {
             Text(player.name)
             .clipped()
         }
-        .frame(width: 60, height: 60)
+        .frame(width: 50, height: 50)
     }
 }
 
