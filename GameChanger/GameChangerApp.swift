@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct GameChangerApp: App {
+    @StateObject var vm = GameViewModel()
     var body: some Scene {
         WindowGroup {
             GameDashBoardView()
+                .environmentObject(vm)
         }
     }
 }
+

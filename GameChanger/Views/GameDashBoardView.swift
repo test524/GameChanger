@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct GameDashBoardView: View {
-    @StateObject private var viewModel = GameViewModel()
     var body: some View {
         VStack(spacing:0) {
-            ScoreCardView(vm: viewModel)
-            CustomTabView(vm: viewModel)
+            ScoreCardView()
+            CustomTabView()
         }
     }
 }
 
 struct ScoringView: View {
     
-    @ObservedObject var vm: GameViewModel
+    //@ObservedObject var vm: GameViewModel
+    @EnvironmentObject var vm: GameViewModel
     
     @State private var dragOffsets: [UUID: CGSize] = [:]
     @State private var hoverPlayerID: UUID?
@@ -27,26 +27,32 @@ struct ScoringView: View {
     
     @State private var showOptions = false
     
-    // popup frames
     @State private var decisionFrames: [SafeOutDecision: CGRect] = [:]
     
     var body: some View {
+        VStack(spacing:0) {
+            Rectangle()
+                .foregroundStyle(Color.yellow)
+                .frame(maxWidth:.infinity)
+                .frame(height:40)
+            getMainView()
+        }
+    }
+    
+    @ViewBuilder func getMainView() -> some View {
         GeometryReader { geo in
                 ZStack {
-                    Image("softball")
+                    Image("baseball")
                         .resizable()
                         .scaledToFill()
-                        .frame(width:geo.size.width,height:geo.size.height)
-                        .ignoresSafeArea()
-                    //basesView(geo: geo)
                     playersView(geo: geo)
-                    optionSelection()
+                    optionSelection(geo:geo)
                     decisionPopup(geo: geo)
-                }.coordinateSpace(name: "field")
-        }
+                }
+        }//.background(Color.red)
         .onAppear {
             if vm.gameState.basePlayers.isEmpty {
-                    self.vm.addHomePlayer()
+               self.vm.addHomePlayer()
             }
         }
         .safeAreaInset(edge: .bottom) {
@@ -55,25 +61,26 @@ struct ScoringView: View {
         }
         .overlay {
             if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
-                Color.black.opacity(0.4).allowsHitTesting(true)
+                Color.black.opacity(0.4)
+                    .allowsHitTesting(true)
                     .ignoresSafeArea()
             }
         }
     }
     
     @ViewBuilder
-    func optionSelection() -> some View {
+    func optionSelection(geo:GeometryProxy) -> some View {
         Button {
             showOptions.toggle()
         }label: {
             Image(systemName: "cricket.ball.circle.fill")
                 .font(.largeTitle)
                 .fontWeight(.heavy)
-        }//.zIndex(-1)
+        }
         .fullScreenCover(isPresented: $showOptions) {
             GameOptionsView(vm: vm)
-            .presentationBackground(Color.black.opacity(0.3))
-        }
+            //.presentationBackground(Color.black.opacity(0.3))
+        }.position(pitchBallPosition(geo: geo))
     }
     
 }
@@ -96,9 +103,6 @@ extension ScoringView {
     @ViewBuilder
     func playersView(geo: GeometryProxy) -> some View {
         let players = vm.gameState.basePlayers
-        
-      
-
         ForEach(players.indices, id: \.self) { i in
             let player = players[i]
             PlayerView(player: player)
@@ -127,7 +131,7 @@ extension ScoringView {
         ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) {safeOutIndex in
             let player = players[safeOutIndex]
             SafeOutView(vm: vm, player: player)
-                .zIndex(3) .position(positionForSafeOut(for: player.base, geo: geo))
+                .position(positionForSafeOut(for: player.base, geo: geo))
         }
         
     }
@@ -188,7 +192,6 @@ extension ScoringView {
             .background(.thinMaterial)
             .cornerRadius(10)
             .position(position(for: base, geo: geo))
-            //.zIndex(10)
         }
     }
     
@@ -217,43 +220,43 @@ extension ScoringView {
 }
 
 extension ScoringView {
+    
     func getPoint(i:Int,player:Player,geo:GeometryProxy) -> CGPoint {
         let players = vm.gameState.basePlayers
         let homeIndices = players.indices.filter { players[$0].base == .scored }
         let position = position(for: player.base, geo: geo)
         if  player.base == .scored {
-            return CGPoint(x: position.x - CGFloat(homeIndices.firstIndex(of: i)! * 70), y: position.y)
+            return CGPoint(x: position.x - CGFloat(homeIndices.firstIndex(of: i)! * 60), y: position.y)
         }
         return position
     }
     
+    func pitchBallPosition(geo: GeometryProxy) -> CGPoint {
+        let (px,py) = (0.50,0.61)
+        return CGPoint(x: px * geo.size.width, y: py * geo.size.height)
+    }
+    
     func position(for base: Base, geo: GeometryProxy) -> CGPoint {
-        let center = CGPoint(
-            x: geo.size.width / 2,
-            y: geo.size.height * 0.9
-        )
-        print("Width:",geo.size.width)
-        print("Height:",geo.size.height)
-        let r = min(geo.size.width, geo.size.height) * 0.31
-        switch base {
-        case .second:
-            return CGPoint(x: center.x, y: center.y - r)
-        case .first:
-            return CGPoint(x: center.x + r, y: center.y)
-        case .home,.scored:
-            return CGPoint(x: center.x, y: center.y + r)
-        case .third:
-            return CGPoint(x: center.x - r, y: center.y)
-        }
+        // Percentage anchors tuned to the softball background image.
+        // Adjust these values if you need to fine-tune alignment.
+        let anchors: [Base: (CGFloat, CGFloat)] = [
+            .home:   (0.50, 0.90),
+            .first:  (0.76, 0.61),
+            .second: (0.50, 0.41),
+            .third:  (0.24, 0.61),
+            .scored: (0.50, 0.87)
+        ]
+        let (px, py) = anchors[base] ?? (0.50, 0.88)
+        return CGPoint(x: px * geo.size.width, y: py * geo.size.height)
     }
     
     func positionForSafeOut(for base: Base, geo: GeometryProxy) -> CGPoint {
         let point = self.position(for: base, geo: geo)
         switch base {
-        case .first,.second,.third:
-            return  CGPoint(x: point.x, y: point.y - 58)
-        case .home,.scored:
-            return CGPoint(x: point.x, y: point.y + 58)
+        case .first, .second, .third:
+            return CGPoint(x: point.x, y: point.y - 60)
+        case .home, .scored:
+            return CGPoint(x: point.x, y: point.y + 60)
         }
     }
     
@@ -272,6 +275,7 @@ extension ScoringView {
         }
         return nearest?.0 ?? .home
     }
+    
 }
 
 extension ScoringView {
@@ -314,5 +318,6 @@ extension ScoringView {
 
 #Preview {
     GameDashBoardView()
+        .environmentObject(GameViewModel())
 }
 

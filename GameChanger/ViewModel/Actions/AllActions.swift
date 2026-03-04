@@ -10,7 +10,7 @@ import SwiftUI
 
 
 protocol GameRule {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool
     func execute(state: GameViewModel)
 }
 
@@ -19,14 +19,14 @@ struct RulesEngine {
     init(rules: [GameRule]) {
            self.rules = rules
     }
-    func process(action: GameAction, state: GameViewModel) {
+    func process(action: GameOption, state: GameViewModel) {
         for rule in rules {
             if rule.applies(to: action, viewModel: state) {
                  rule.execute(state: state)
             }
         }
     }
-    func safeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel, action:GameAction) {
+    func safeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel, action:GameOption) {
         for rule in rules {
             if rule.applies(to: action, viewModel: state),
                let decidable = rule as? SafeOutDecidable {
@@ -37,8 +37,8 @@ struct RulesEngine {
 }
 
 struct SingleAdvanceRule: GameRule, SafeOutDecidable {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .single
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "single"
     }
     func execute(state: GameViewModel) {
         withAnimation(.spring) {
@@ -75,8 +75,8 @@ struct SingleAdvanceRule: GameRule, SafeOutDecidable {
 
 
 struct DoubleAdvanceRule: GameRule, SafeOutDecidable {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .double
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "double"
     }
     func execute(state: GameViewModel) {
         withAnimation(.spring) {
@@ -119,8 +119,8 @@ struct DoubleAdvanceRule: GameRule, SafeOutDecidable {
 
 struct TripleAdvanceRule: GameRule, SafeOutDecidable {
     
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .triple
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "triple"
     }
     
     func execute(state: GameViewModel) {
@@ -168,8 +168,9 @@ struct TripleAdvanceRule: GameRule, SafeOutDecidable {
 }
 
 struct FielderChoiceRule: GameRule, SafeOutDecidable {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .fielderChoice
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        let key = action.title.lowercased()
+        return key == "fielderchoice" || key == "fielder's choice" || key == "fielderschoice"
     }
     func execute(state: GameViewModel) {
         withAnimation(.easeInOut) {
@@ -219,8 +220,8 @@ struct FielderChoiceRule: GameRule, SafeOutDecidable {
 }
 
 struct BallActionRule: GameRule {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .ball
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "ball"
     }
     func execute(state: GameViewModel) {
         state.gameState.balls += 1
@@ -239,8 +240,9 @@ struct BallActionRule: GameRule {
 
 
 struct HitByPitch: GameRule {
-    func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
-        action == .hitbyPitch
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        let key = action.title.lowercased()
+        return key == "hitbypitch" || key == "hbp"
     }
     func execute(state: GameViewModel) {
         // Determine current occupancy

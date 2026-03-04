@@ -17,7 +17,7 @@ struct GameState {
     var inning: Int = 1
     var isTopInning: Bool = true
     var currentOrder = 0
-    var gameAction:GameAction? = nil
+    var gameAction:GameOption? = nil
     
     var players: [Player] = [
         Player(base: .home, color: Color.red ,name: "Name:1M", order: 1),

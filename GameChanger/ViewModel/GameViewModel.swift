@@ -15,6 +15,17 @@ final class GameViewModel : ObservableObject {
 
     @Published var gameState = GameState()
     
+    private var undoStack: [GameState] = []
+    private var redoStack: [GameState] = []
+        
+    // MARK: - Save State
+    private func saveState() {
+        undoStack.append(gameState)
+        redoStack.removeAll() // Clear redo when new action happens
+    }
+    
+    var options = GameOptionsStore.shared.options
+    
     private var engine = RulesEngine(
         rules: [
             BallActionRule(),
@@ -26,7 +37,8 @@ final class GameViewModel : ObservableObject {
         ]
     )
     
-    func perform(_ action: GameAction) {
+    func perform(_ action: GameOption) {
+        saveState()
         withAnimation {
             engine.process(action: action , state: self)
         }
@@ -84,11 +96,21 @@ final class GameViewModel : ObservableObject {
     func undo() {
         // TODO: Implement undo logic (maintain history stack of game states)
         print("Undo tapped")
+        guard let previous = undoStack.popLast() else { return }
+        redoStack.append(gameState)
+        withAnimation {
+            gameState = previous
+        }
     }
 
     func redo() {
         // TODO: Implement redo logic (maintain history stack of game states)
         print("Redo tapped")
+        guard let next = redoStack.popLast() else { return }
+        undoStack.append(gameState)
+        withAnimation {
+            gameState = next
+        }
     }
 
 }

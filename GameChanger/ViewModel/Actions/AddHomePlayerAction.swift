@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-
+/*
 struct AddHomePlayerAction: GameRule {
     func applies(to action: GameAction, viewModel: GameViewModel) -> Bool {
         action == .single
@@ -23,3 +23,4 @@ struct AddHomePlayerAction: GameRule {
         }
     }
 }
+*/

@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-
+import Combine
 
 enum Base: Int {
     case home = 0, first, second, third, scored
@@ -58,15 +58,62 @@ struct Player: Identifiable, Equatable {
     }
 }
 
+struct GameOptionsJsonModel : Decodable {
+    let data:[GameOption]
+}
 
-enum GameAction: String, CaseIterable {
-    case ball = "Ball"
-    case strike = "Strike"
-    case single = "Single"
-    case double = "Double"
-    case triple = "Triple"
-    case fielderChoice = "Fielder's Choice"
-    case hitbyPitch = "HitByPitch"
+struct GameOption: Decodable, Identifiable {
+    let id: Int
+    let title: String
+    let children: [GameOption]
+    //let actionKey: String
+
+    enum CodingKeys: String, CodingKey { case id, title, children}
+
+    init(id: Int, title: String,children:[GameOption]) {
+        self.id = id
+        self.title = title
+        self.children = children
+        //self.actionKey = actionKey
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try c.decodeIfPresent(Int.self, forKey: .id) ?? 0
+        self.title = try c.decode(String.self, forKey: .title)
+        self.children = try c.decode([GameOption].self, forKey: .children)
+        //self.actionKey = try c.decode(String.self, forKey: .actionKey)
+    }
+}
+
+
+final class GameOptionsStore {
+    static let shared = GameOptionsStore()
+    private(set) var options: [GameOption] = []
+    private var loaded = false
+
+    private init() {
+        load()
+    }
+
+    func load() {
+        guard let url = Bundle.main.url(forResource: "GameOptions", withExtension: "json") else {
+            options = []
+            return
+        }
+        do {
+            let data = try Data(contentsOf: url)
+            let decoded = try loadJSONData(from: data)
+            self.options = decoded
+        } catch {
+            print("Failed to load GameOptions.json:", error)
+            self.options = []
+        }
+    }
+    
+    func loadJSONData(from data: Data) throws -> [GameOption] {
+        try JSONDecoder().decode(GameOptionsJsonModel.self, from: data).data
+    }
 }
 
 
@@ -114,3 +161,4 @@ enum Base: Int, CaseIterable {
     
 }
 */
+

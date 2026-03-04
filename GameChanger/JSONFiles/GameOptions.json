@@ -1,0 +1,892 @@
+{
+  "status": 200,
+  "message": "Game data retrieved successfully",
+  "data": [
+      {
+        "id": 1,
+        "title": "Ball",
+        "data": "Ball",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 2,
+        "title": "Called Strike",
+        "data": "Called Strike",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 3,
+        "title": "Swing & Miss",
+        "data": "Swing & Miss",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 4,
+        "title": "Foul Ball",
+        "data": "Foul Ball",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 5,
+        "title": "Ball in Play",
+        "data": "Ball in Play",
+        "isSelected": false,
+        "parentId": null,
+        "children": [
+          {
+            "id": 6,
+            "title": "Ground Ball",
+            "data": "Ground Ball",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 7,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 6,
+                "children": [
+                  {
+                    "id": 8,
+                    "title": "Out at 1st",
+                    "data": "Out at 1st",
+                    "isSelected": false,
+                    "parentId": 7,
+                    "children": []
+                  },
+                  {
+                    "id": 9,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 7,
+                    "children": []
+                  },
+                  {
+                    "id": 101,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 7,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 10,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 11,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 13,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 14,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 15,
+                "title": "Fielder’s Choice",
+                "data": "Fielder’s Choice",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 17,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 18,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              },
+              {
+                "id": 19,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 6,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 20,
+            "title": "Hard Hit Ground Ball",
+            "data": "Hard Ground Ball",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 21,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 20,
+                "children": [
+                  {
+                    "id": 22,
+                    "title": "Out at 1st",
+                    "data": "Out at 1st",
+                    "isSelected": false,
+                    "parentId": 21,
+                    "children": []
+                  },
+                  {
+                    "id": 23,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 21,
+                    "children": []
+                  },
+                  {
+                    "id": 96,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 21,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 24,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 25,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 27,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 28,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 29,
+                "title": "Fielder’s Choice",
+                "data": "Fielder’s Choice",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 31,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 32,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              },
+              {
+                "id": 33,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 20,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 34,
+            "title": "Fly Ball",
+            "data": "Fly Ball",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 35,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 34,
+                "children": [
+                  {
+                    "id": 36,
+                    "title": "Fly Out",
+                    "data": "Fly Out",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  },
+                  {
+                    "id": 37,
+                    "title": "Fly Out Foul",
+                    "data": "Fly Out Foul",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  },
+                  {
+                    "id": 97,
+                    "title": "Infield Fly",
+                    "data": "Infield Fly",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  },
+                  {
+                    "id": 98,
+                    "title": "Sac Fly",
+                    "data": "Sac Fly",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  },
+                  {
+                    "id": 99,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  },
+                  {
+                    "id": 100,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 35,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 38,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 39,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 41,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 40,
+                "title": "Home Run",
+                "data": "Home Run",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 42,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 43,
+                "title": "Fielder’s Choice",
+                "data": "Fielder’s Choice",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 44,
+                "title": "Foul + Error",
+                "data": "Foul + Error",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 45,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 46,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              },
+              {
+                "id": 47,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 34,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 48,
+            "title": "Line Drive",
+            "data": "Line Drive",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 49,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 48,
+                "children": [
+                  {
+                    "id": 50,
+                    "title": "Line Out",
+                    "data": "Line Out",
+                    "isSelected": false,
+                    "parentId": 49,
+                    "children": []
+                  },
+                  {
+                    "id": 51,
+                    "title": "Line Out Foul",
+                    "data": "Line Out Foul",
+                    "isSelected": false,
+                    "parentId": 49,
+                    "children": []
+                  },
+                  {
+                    "id": 102,
+                    "title": "Sac Fly",
+                    "data":  "Sac Fly",
+                    "isSelected": false,
+                    "parentId": 49,
+                    "children": []
+                  },
+                  {
+                    "id": 103,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 49,
+                    "children": []
+                  },
+                  {
+                    "id": 104,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 49,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 52,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 53,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 54,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 94,
+                "title": "Home Run",
+                "data": "Home Run",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 55,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 56,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 57,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 58,
+                "title": "Foul Ball + Error",
+                "data": "Foul Ball + Error",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              },
+              {
+                "id": 59,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 48,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 60,
+            "title": "Bunt",
+            "data": "Bunt",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 61,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 60,
+                "children": [
+                  {
+                    "id": 62,
+                    "title": "Out at 1st (NoSac)",
+                    "data": "Out at 1st (NoSac)",
+                    "isSelected": false,
+                    "parentId": 61,
+                    "children": []
+                  },
+                  {
+                    "id": 63,
+                    "title": "Pop Out",
+                    "data": "Pop Out",
+                    "isSelected": false,
+                    "parentId": 61,
+                    "children": []
+                  },
+                  {
+                    "id": 105,
+                    "title": "Sac Bunt",
+                    "data": "Sac Bunt",
+                    "isSelected": false,
+                    "parentId": 61,
+                    "children": []
+                  },
+                  {
+                    "id": 106,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 61,
+                    "children": []
+                  },
+                  {
+                    "id": 107,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 61,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 112,
+                "title": "Sac Bunt (Safe)",
+                "data":  "Sac Bunt (Safe)",
+                "isSelected": false,
+                "parentId": 60,
+                "children": [
+                  {
+                    "id": 113,
+                    "title": "Safe on Error",
+                    "data":  "Safe on Error",
+                    "isSelected": false,
+                    "parentId": 112,
+                    "children": []
+                  },
+                  {
+                    "id": 114,
+                    "title": "Safe on FC",
+                    "data":  "Safe on FC",
+                    "isSelected": false,
+                    "parentId": 112,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 64,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 65,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 67,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 68,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 69,
+                "title": "Fielder’s Choice",
+                "data": "Fielder’s Choice",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 70,
+                "title": "Foul + Error",
+                "data": "Foul + Error",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 71,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 72,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              },
+              {
+                "id": 73,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 60,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 74,
+            "title": "Pop Fly",
+            "data": "Pop Fly",
+            "isSelected": false,
+            "parentId": 5,
+            "children": [
+              {
+                "id": 75,
+                "title": "Batter out",
+                "data": "Batter out",
+                "isSelected": false,
+                "parentId": 74,
+                "children": [
+                  {
+                    "id": 76,
+                    "title": "Pop Out",
+                    "data": "Pop Out",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  },
+                  {
+                    "id": 77,
+                    "title": "Pop Out Foul",
+                    "data": "Pop Out Foul",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  },
+                  {
+                    "id": 108,
+                    "title": "Infield Fly",
+                    "data": "Infield Fly",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  },
+                  {
+                    "id": 109,
+                    "title": "Sac Fly",
+                    "data": "Sac Fly",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  },
+                  {
+                    "id": 110,
+                    "title": "Double play",
+                    "data": "Double play",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  },
+                  {
+                    "id": 111,
+                    "title": "Triple play",
+                    "data": "Triple play",
+                    "isSelected": false,
+                    "parentId": 75,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 78,
+                "title": "Single",
+                "data": "Single",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 79,
+                "title": "Double",
+                "data": "Double",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 80,
+                "title": "Triple",
+                "data": "Triple",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 95,
+                "title": "Home Run",
+                "data": "Home Run",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 81,
+                "title": "In-the-Park Home Run",
+                "data": "In-the-Park Home Run",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 82,
+                "title": "Error",
+                "data": "Error",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 83,
+                "title": "Foul Ball",
+                "data": "Foul Ball",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 84,
+                "title": "Foul Ball + Error",
+                "data": "Foul Ball + Error",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              },
+              {
+                "id": 85,
+                "title": "Batter Interference",
+                "data": "Batter Interference",
+                "isSelected": false,
+                "parentId": 74,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 86,
+            "title": "Home Run",
+            "data": "Home Run",
+            "isSelected": false,
+            "parentId": 5,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": 87,
+        "title": "Hit by Pitch",
+        "data": "Hit by Pitch",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 88,
+        "title": "Intentional Ball",
+        "data": "Intentional Ball",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 89,
+        "title": "Intentional Walk",
+        "data": "Intentional Walk",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 92,
+        "title": "C. Interference",
+        "data": "C. Interference",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 90,
+        "title": "Illegal Pitch",
+        "data": "Illegal Pitch",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 91,
+        "title": "Balk",
+        "data": "Balk",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      },
+      {
+        "id": 93,
+        "title": "Batter Out: Other",
+        "data": "Batter Out: Other",
+        "isSelected": false,
+        "parentId": null,
+        "children": []
+      }
+    ]
+}
