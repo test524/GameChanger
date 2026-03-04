@@ -45,10 +45,5 @@ struct GameState {
     
     var basePlayers = [Player]()
     
-    // Add logic to check if the state needs resetting
-    mutating func clearCount() {
-        balls = 0
-        strikes = 0
-    }
     
 }

@@ -226,7 +226,11 @@ struct BallActionRule: GameRule {
     func execute(state: GameViewModel) {
         state.gameState.balls += 1
         if state.gameState.balls >= 4 {
-            state.gameState.clearCount()
+            
+            // Reset count after out
+            state.gameState.strikes = 0
+            state.gameState.balls = 0
+            
             withAnimation(.spring) {
                 state.advancePlayers()
             }completion: {
@@ -238,11 +242,98 @@ struct BallActionRule: GameRule {
     }
 }
 
+struct StrikeActionRule: GameRule {
+    
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "called strike"
+    }
+    
+    func execute(state: GameViewModel) {
+        
+        // 1️⃣ Add strike
+        state.gameState.strikes += 1
+        
+        // 2️⃣ If strike limit reached → Out
+        if state.gameState.strikes > 2 {
+            
+            state.gameState.outs += 1
+            
+            // Reset count after out
+            state.gameState.strikes = 0
+            state.gameState.balls = 0
+            
+            // 3️⃣ If outs limit reached → Change inning
+            if state.gameState.outs > 2 {
+                
+                state.gameState.outs = 0
+                
+                state.changeInning()
+                
+            }
+        }
+    }
+    
+}
+
+struct SwingAndMissRule: GameRule {
+    
+    private let maxStrikes = 2
+    private let maxOuts = 2
+    
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "swing and miss"
+    }
+    
+    func execute(state: GameViewModel) {
+        
+        // 1️⃣ Add Strike
+        state.gameState.strikes += 1
+        
+        // 2️⃣ If strikeout
+        if state.gameState.strikes > maxStrikes {
+            
+            state.gameState.outs += 1
+            
+            // Reset count for next batter
+            state.gameState.strikes = 0
+            state.gameState.balls = 0
+            
+            // Move batting order
+            state.gameState.currentOrder += 1
+            
+            // 3️⃣ If inning over
+            if state.gameState.outs > maxOuts {
+                state.gameState.outs = 0
+                state.changeInning()
+            }
+        }
+    }
+}
+
+struct FoulBallRule: GameRule {
+    
+    private let maxStrikes = 2
+    
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "foul ball"
+    }
+    
+    func execute(state: GameViewModel) {
+        
+        // Only increase strike if less than 2
+        if state.gameState.strikes < maxStrikes {
+            state.gameState.strikes += 1
+        }
+        
+        // If already 2 strikes → do nothing
+    }
+}
+
 
 struct HitByPitch: GameRule {
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
-        let key = action.title.lowercased()
-        return key == "hitbypitch" || key == "hbp"
+        let key = action.title
+        return key == "Hit by Pitch" || key == "hbp"
     }
     func execute(state: GameViewModel) {
         // Determine current occupancy
@@ -252,6 +343,57 @@ struct HitByPitch: GameRule {
 
         var didScore = false
         withAnimation(.spring) {
+            
+            // If bases loaded → runner on 3rd scores
+            if has1st == true && has2nd == true && has3rd == true {
+                //if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .third }) {
+                state.advancePlayers()
+                //}
+                return
+            }
+            
+            // Move runners in reverse order (3rd -> 2nd -> 1st)
+            
+            // Move 2B to 3B if forced
+            if has1st == true && has2nd == true {
+                //thirdBase = secondBase
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .second }) {
+                    didScore = true
+                    state.gameState.basePlayers[thirdIndex].base = .third
+                }
+                //secondBase = firstBase
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    state.gameState.basePlayers[thirdIndex].base = .second
+                }
+                //firstBase = batter
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[thirdIndex].base = .first
+                }
+                return
+            }
+
+            
+            // Move 1B to 2B if forced
+            if has1st == true {
+                //secondBase = firstBase
+                //firstBase = batter
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    state.gameState.basePlayers[thirdIndex].base = .second
+                }
+                //firstBase = batter
+                if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    state.gameState.basePlayers[thirdIndex].base = .first
+                }
+                return
+            }
+            
+            // If first base empty
+            //firstBase = batter
+            if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                state.gameState.basePlayers[homeIndex].base = .first
+            }
+            
+            /*
             if has1st && has2nd && has3rd {
                 // Bases loaded: force advance, runner from 3rd scores
                 if let thirdIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .third }) {
@@ -291,7 +433,7 @@ struct HitByPitch: GameRule {
                 if let homeIndex = state.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
                     state.gameState.basePlayers[homeIndex].base = .first
                 }
-            }
+            }*/
         } completion: {
             if didScore {
                 state.removeHomePlayer()

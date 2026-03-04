@@ -29,6 +29,7 @@ final class GameViewModel : ObservableObject {
     private var engine = RulesEngine(
         rules: [
             BallActionRule(),
+            StrikeActionRule(),
             SingleAdvanceRule(),
             DoubleAdvanceRule(),
             TripleAdvanceRule(),
@@ -69,6 +70,15 @@ final class GameViewModel : ObservableObject {
             if gameState.basePlayers[i].base != .scored {
                 gameState.basePlayers[i].base.next()
             }
+        }
+    }
+    
+    func changeInning() {
+        if gameState.isTopInning {
+            gameState.isTopInning = false
+        } else {
+            gameState.isTopInning = true
+            gameState.inning += 1
         }
     }
     
