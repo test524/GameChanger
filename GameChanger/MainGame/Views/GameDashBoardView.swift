@@ -42,13 +42,34 @@ struct ScoringView: View {
     @ViewBuilder func getMainView() -> some View {
         GeometryReader { geo in
                 ZStack {
+                    // Bottom layer: field and all non-decision players
                     Image("baseball")
                         .resizable()
                         .scaledToFill()
+                        .zIndex(0)
+
+                    // Non-decision players
                     playersView(geo: geo)
+                        .zIndex(1)
+
+                    // Middle layer: dim overlay when a decision is required
+                    if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
+                        Color.black.opacity(0.4)
+                            .ignoresSafeArea()
+                            .zIndex(2)
+                    }
+
+                    // Top layer: only the players that require decision and their SafeOutView
+                    decisionLayer(geo: geo)
+                        //.zIndex(3)
+
+                    // Controls and decision popup should appear above players if needed
                     optionSelection(geo:geo)
+                        .zIndex(1)
                     decisionPopup(geo: geo)
+                        .zIndex(5)
                 }
+                .coordinateSpace(name: "field")
         }//.background(Color.red)
         .onAppear {
             if vm.gameState.basePlayers.isEmpty {
@@ -58,13 +79,6 @@ struct ScoringView: View {
         .safeAreaInset(edge: .bottom) {
             bottomBar()
             .offset(y:20)
-        }
-        .overlay {
-            if vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }) {
-                Color.black.opacity(0.4)
-                    .allowsHitTesting(true)
-                    .ignoresSafeArea()
-            }
         }
     }
     
@@ -85,7 +99,6 @@ struct ScoringView: View {
     
 }
 
-
 extension ScoringView {
     @ViewBuilder
     func basesView(geo: GeometryProxy) -> some View {
@@ -103,7 +116,7 @@ extension ScoringView {
     @ViewBuilder
     func playersView(geo: GeometryProxy) -> some View {
         let players = vm.gameState.basePlayers
-        ForEach(players.indices, id: \.self) { i in
+        ForEach(players.indices.filter { !players[$0].isSafeOutRequired }, id: \.self) { i in
             let player = players[i]
             PlayerView(player: player)
                 .position(self.getPoint(i: i, player: player, geo: geo))
@@ -125,15 +138,30 @@ extension ScoringView {
                         .onEnded { value in
                             handleDrop(player: player, value: value, geo: geo)
                         }
-                ).zIndex(hoverPlayerID == player.id ? 2 : 1)
+                )
+                //.zIndex(hoverPlayerID == player.id ? 1.5 : (player.base == .home || player.base == .scored ? 1 : 0))
         }
-        
-        ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) {safeOutIndex in
-            let player = players[safeOutIndex]
+    }
+}
+
+extension ScoringView {
+    @ViewBuilder
+    func decisionLayer(geo: GeometryProxy) -> some View {
+        let players = vm.gameState.basePlayers
+        // Only render the players requiring a decision on this top layer
+        ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { i in
+            let player = players[i]
+            PlayerView(player: player)
+                .position(self.getPoint(i: i, player: player, geo: geo))
+                .zIndex(2)
+        }
+        // And render their SafeOut popups above them
+        ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { i in
+            let player = players[i]
             SafeOutView(vm: vm, player: player)
                 .position(positionForSafeOut(for: player.base, geo: geo))
+                .zIndex(2)
         }
-        
     }
 }
 
@@ -192,6 +220,7 @@ extension ScoringView {
             .background(.thinMaterial)
             .cornerRadius(10)
             .position(position(for: base, geo: geo))
+            .zIndex(5)
         }
     }
     
@@ -295,6 +324,7 @@ extension ScoringView {
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(.ultraThickMaterial)
+        .zIndex(6)
         .disabled(vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }))
     }
 

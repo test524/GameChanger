@@ -40,13 +40,14 @@ final class GameViewModel : ObservableObject {
     
     func perform(_ action: GameOption) {
         saveState()
+        gameState.gameAction = action
         withAnimation {
             engine.process(action: action , state: self)
         }
     }
     
     func safeOutPerform(for player: Player, decision: SafeOutDecision) {
-        engine.safeOutDecision(for: player, decision: decision, state: self, action: self.gameState.gameAction!)
+        engine.safeOutDecision(for: player, decision: decision, state: self)
     }
     
     func addHomePlayer() {
@@ -122,7 +123,7 @@ final class GameViewModel : ObservableObject {
             gameState = next
         }
     }
-
+  
 }
 
 

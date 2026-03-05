@@ -30,9 +30,9 @@ struct RulesEngine {
             }
         }
     }
-    func safeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel, action:GameOption) {
+    func safeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel) {
         for rule in rules {
-            if rule.applies(to: action, viewModel: state),
+            if rule.applies(to: state.gameState.gameAction!, viewModel: state),
                let decidable = rule as? SafeOutDecidable {
                 decidable.resolveSafeOutDecision(for: player, decision: decision, state: state)
             }
