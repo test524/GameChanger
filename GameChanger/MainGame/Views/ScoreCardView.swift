@@ -197,23 +197,22 @@ struct GameCountView: View {
     
     var body: some View {
         HStack(spacing: 12) {
-            
             CountIndicatorRow(
-                title: "Ball",
+                title: "BALL",
                 current: balls,
                 max: 3,
                 activeColor: .green
             ).padding(.leading,30)
             Spacer()
             CountIndicatorRow(
-                title: "Strike",
+                title: "STRIKE",
                 current: strikes,
                 max: 2,
                 activeColor: .orange
             )
             Spacer()
             CountIndicatorRow(
-                title: "Out",
+                title: "OUT",
                 current: outs,
                 max: 2,
                 activeColor: .red

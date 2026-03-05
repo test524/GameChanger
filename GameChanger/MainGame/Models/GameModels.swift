@@ -20,15 +20,15 @@ struct Player: Identifiable, Equatable {
     let name : String
     var order : Int
     var isSafeOutRequired : Bool = false
-    init(base: Base, color: Color, name:String, order:Int) {
+    var positionId:Int
+    init(base: Base, color: Color, name:String, order:Int, positionId:Int = 10) {
         self.base = base
         self.color = color
         self.name = name
         self.order = order
+        self.positionId = positionId
     }
 }
-
-
 
 
 /*

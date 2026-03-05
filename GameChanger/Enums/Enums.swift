@@ -41,3 +41,70 @@ enum Tab: String, CaseIterable {
     case PlayByPlay = "PlayByPlay"
     case BoxScore = "BoxScore"
 }
+
+extension Position {
+    init(_ positionId: Int) {
+        switch positionId {
+        case 1: self = .pitcher
+        case 2: self = .catcher
+        case 3: self = .firstBase
+        case 4: self = .secondBase
+        case 5: self = .thirdBase
+        case 6: self = .shortstop
+        case 7: self = .leftField
+        case 8: self = .centerField
+        case 9: self = .rightField
+        case 10: self = .extraHitter
+        default: self = .extraHitter
+        }
+    }
+}
+
+
+enum Position: String,Codable {
+    case pitcher = "P"
+    case catcher = "C"
+    case firstBase = "1B"
+    case secondBase = "2B"
+    case thirdBase = "3B"
+    case shortstop = "SS"
+    case leftField = "LF"
+    case centerField = "CF"
+    case rightField = "RF"
+    case extraHitter = "EH"
+
+    var positionId: Int {
+        switch self {
+        case .pitcher: return 1
+        case .catcher: return 2
+        case .firstBase: return 3
+        case .secondBase: return 4
+        case .thirdBase: return 5
+        case .shortstop: return 6
+        case .leftField: return 7
+        case .centerField: return 8
+        case .rightField: return 9
+        case .extraHitter: return 10
+        }
+    }
+    
+    var defaultHitPoint: HitPoint {
+        switch self {
+        case .extraHitter: return HitPoint(x: 0.5, y: 0.6739)
+        case .pitcher: return HitPoint(x: 0.5, y: 0.62)
+        case .catcher: return HitPoint(x: 0.50, y: 0.95)
+        case .firstBase: return HitPoint(x: 0.63, y: 0.65)
+        case .secondBase: return HitPoint(x: 0.57, y: 0.53)
+        case .thirdBase: return HitPoint(x: 0.36, y: 0.69)
+        case .shortstop: return HitPoint(x: 0.42, y: 0.53)
+        case .leftField: return HitPoint(x: 0.35, y: 0.40)
+        case .centerField: return HitPoint(x: 0.50, y: 0.30)
+        case .rightField: return HitPoint(x: 0.64, y: 0.40)
+        }
+    }
+}
+
+struct HitPoint :Codable{
+    let x: CGFloat
+    let y: CGFloat
+}

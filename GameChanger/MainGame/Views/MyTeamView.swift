@@ -31,7 +31,6 @@ struct MyTeamView: View {
 
     func move(from source: IndexSet, to destination: Int) {
         viewModel.gameState.players.move(fromOffsets: source, toOffset: destination)
-        
         // Optional: Update the 'order' property after the move
         for i in 0..<viewModel.gameState.players.count {
             viewModel.gameState.players[i].order = i + 1
@@ -51,12 +50,20 @@ struct PlayerRow: View {
             Text(player.name)
                 .font(.system(.body, design: .monospaced))
             Spacer()
+            Button {
+                print("sd")
+            } label: {
+                Text(Position(player.positionId).rawValue)
+                    .font(.system(.body, design: .monospaced))
+            }.padding(.trailing,30)
         }
         .padding(.vertical, 4)
     }
 }
 
+
 #Preview {
     MyTeamView()
         .environmentObject(GameViewModel())
 }
+
