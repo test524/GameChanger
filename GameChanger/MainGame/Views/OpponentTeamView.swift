@@ -17,7 +17,8 @@ struct OpponentTeamView: View {
         NavigationStack {
             List {
                 ForEach(viewModel.gameState.opponent) { player in
-                    PlayerRow(player: player)
+                    //PlayerRow(player: player, onTapPosition: <#() -> Void#>)
+                    Text("pl")
                 }
                 .onMove(perform: move)
             }.listStyle(.plain)

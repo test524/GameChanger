@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import SwiftUI
 
 enum Base: Int {
     case home = 0, first, second, third, scored
@@ -61,7 +61,7 @@ extension Position {
 }
 
 
-enum Position: String,Codable {
+enum Position: String,Codable , CaseIterable{
     case pitcher = "P"
     case catcher = "C"
     case firstBase = "1B"
@@ -91,20 +91,30 @@ enum Position: String,Codable {
     var defaultHitPoint: HitPoint {
         switch self {
         case .extraHitter: return HitPoint(x: 0.5, y: 0.6739)
+            
         case .pitcher: return HitPoint(x: 0.5, y: 0.62)
-        case .catcher: return HitPoint(x: 0.50, y: 0.95)
-        case .firstBase: return HitPoint(x: 0.63, y: 0.65)
-        case .secondBase: return HitPoint(x: 0.57, y: 0.53)
-        case .thirdBase: return HitPoint(x: 0.36, y: 0.69)
-        case .shortstop: return HitPoint(x: 0.42, y: 0.53)
-        case .leftField: return HitPoint(x: 0.35, y: 0.40)
-        case .centerField: return HitPoint(x: 0.50, y: 0.30)
-        case .rightField: return HitPoint(x: 0.64, y: 0.40)
+        case .catcher: return HitPoint(x: 0.50, y: 1.0)
+            
+        case .firstBase: return HitPoint(x: 0.81, y: 0.59)
+        case .thirdBase: return HitPoint(x: 0.19, y: 0.59)
+            
+        case .secondBase: return HitPoint(x: 0.69, y: 0.50)
+        case .shortstop: return HitPoint(x: 0.31, y: 0.50)
+            
+        case .leftField: return HitPoint(x: 0.15, y: 0.25)
+        case .centerField: return HitPoint(x: 0.50, y: 0.18)
+        case .rightField: return HitPoint(x: 0.85, y: 0.25)
         }
     }
+    
 }
 
 struct HitPoint :Codable{
     let x: CGFloat
     let y: CGFloat
+}
+
+#Preview {
+    GameDashBoardView()
+        .environmentObject(GameViewModel())
 }

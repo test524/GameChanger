@@ -48,6 +48,9 @@ struct ScoringView: View {
                         .scaledToFill()
                         .zIndex(0)
 
+                    fieldersView(geo: geo)
+                        .zIndex(0.5)
+                    
                     // Non-decision players
                     playersView(geo: geo)
                         .zIndex(1)
@@ -68,7 +71,7 @@ struct ScoringView: View {
                         .zIndex(1)
                     decisionPopup(geo: geo)
                         .zIndex(5)
-                }
+                }.ignoresSafeArea()
                 .coordinateSpace(name: "field")
         }//.background(Color.red)
         .onAppear {
@@ -108,6 +111,30 @@ extension ScoringView {
             BaseMarker().position(position(for: .second, geo: geo))
             BaseMarker().position(position(for: .third, geo: geo))
             BaseMarker().position(position(for: .scored, geo: geo))
+        }
+    }
+}
+
+extension ScoringView {
+    @ViewBuilder
+    func fieldersView(geo: GeometryProxy) -> some View {
+        let all = vm.gameState.players.filter({$0.positionId != 10})
+        ForEach(all) { player in
+            // Compute position from the player's Position defaultHitPoint
+            let pos = Position(player.positionId)
+            let hp = pos.defaultHitPoint
+            let point = CGPoint(x: hp.x * geo.size.width, y: hp.y * geo.size.height)
+            ZStack {
+                Circle()
+                    .fill(player.color.opacity(0.85))
+                    .frame(width: 22, height: 22)
+                    .overlay(
+                        Text(pos.rawValue)
+                            .font(.caption2)
+                            .foregroundStyle(.white)
+                    )
+            }
+            .position(point)
         }
     }
 }
@@ -261,7 +288,7 @@ extension ScoringView {
     }
     
     func pitchBallPosition(geo: GeometryProxy) -> CGPoint {
-        let (px,py) = (0.50,0.61)
+        let (px,py) = (0.50,0.71)
         return CGPoint(x: px * geo.size.width, y: py * geo.size.height)
     }
     
