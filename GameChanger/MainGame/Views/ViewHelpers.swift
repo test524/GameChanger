@@ -40,8 +40,6 @@ struct CustomTabView: View {
 }
 
 
-
-
 struct PlayerView : View {
     let player: Player
     var body: some View {
@@ -55,13 +53,6 @@ struct PlayerView : View {
     }
 }
 
-enum Tab: String, CaseIterable {
-    case Score = "Scoring"
-    case MyTeam = "MyTeam"
-    case Opponent = "Opponent"
-    case PlayByPlay = "PlayByPlay"
-    case BoxScore = "BoxScore"
-}
 
 
 struct CustomTabBar : View {

@@ -14,6 +14,10 @@ protocol GameRule {
     func execute(state: GameViewModel)
 }
 
+protocol SafeOutDecidable {
+    func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, state: GameViewModel)
+}
+
 struct RulesEngine {
     private let rules: [GameRule]
     init(rules: [GameRule]) {
