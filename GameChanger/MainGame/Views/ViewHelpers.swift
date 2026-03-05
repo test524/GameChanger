@@ -49,10 +49,9 @@ struct PlayerView : View {
             Text(String(player.order))
             .clipped()
         }
-        .frame(width: 50, height: 50)
+        .frame(width: 42, height: 42)
     }
 }
-
 
 
 struct CustomTabBar : View {
@@ -94,38 +93,52 @@ struct CustomTabBar : View {
 }
 
 struct SafeOutView: View {
-    //let onDecision: (SafeOutDecision) -> Void
-    @ObservedObject var vm: GameViewModel
-    var player:Player
+    
+    let player: Player
+    let onDecision: (Player, SafeOutDecision) -> Void
+    
     var body: some View {
         HStack(spacing: 0) {
-           Button{
-               safeOut(onDecision: .safe)
-           } label: {
-               Text("Safe")
-                   .foregroundStyle(Color.white)
-                   .padding(.horizontal,20)
-                   .padding(.vertical,10)
-                   .background(Color.green)
-           }
-            Button{
-                safeOut(onDecision: .out)
+            
+            Button {
+                //withAnimation {
+                    onDecision(player, .safe)
+                //}
+            } label: {
+                Text("Safe")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 55, height: 40)
+                    .background(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: 5,
+                            bottomLeadingRadius: 5
+                        )
+                        .fill(Color.green)
+                    )
+            }
+            .buttonStyle(.plain)
+            
+            
+            Button {
+                //withAnimation {
+                    onDecision(player, .out)
+                //}
             } label: {
                 Text("Out")
-                    .foregroundStyle(Color.white)
-                    .padding(.horizontal,20)
-                    .padding(.vertical,10)
-                    .background(Color.red)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 55, height: 40)
+                    .background(
+                        UnevenRoundedRectangle(
+                            bottomTrailingRadius: 5, topTrailingRadius: 5
+                        )
+                        .fill(Color.red)
+                    )
             }
+            .buttonStyle(.plain)
         }
-        .cornerRadius(4)
     }
-    
-    func safeOut(onDecision: SafeOutDecision) {
-        vm.safeOutPerform(for: player, decision: onDecision)
-        //resolveSafeOutDecision(for: player, decision: onDecision)
-    }
-    
 }
 
 struct BaseMarker: View {

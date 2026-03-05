@@ -36,7 +36,8 @@ struct ScoringView: View {
                 .frame(maxWidth:.infinity)
                 .frame(height:40)
             getMainView()
-        }
+            bottomBar()
+        }.ignoresSafeArea()
     }
     
     @ViewBuilder func getMainView() -> some View {
@@ -45,7 +46,7 @@ struct ScoringView: View {
                     // Bottom layer: field and all non-decision players
                     Image("baseball")
                         .resizable()
-                        .scaledToFill()
+                        //.scaledToFill()
                         .zIndex(0)
 
                     fieldersView(geo: geo)
@@ -71,7 +72,7 @@ struct ScoringView: View {
                         .zIndex(1)
                     decisionPopup(geo: geo)
                         .zIndex(5)
-                }.ignoresSafeArea()
+                }//.ignoresSafeArea()
                 .coordinateSpace(name: "field")
         }//.background(Color.red)
         .onAppear {
@@ -79,10 +80,10 @@ struct ScoringView: View {
                self.vm.addHomePlayer()
             }
         }
-        .safeAreaInset(edge: .bottom) {
+        /*.safeAreaInset(edge: .bottom) {
             bottomBar()
             .offset(y:20)
-        }
+        }*/
     }
     
     @ViewBuilder
@@ -185,9 +186,11 @@ extension ScoringView {
         // And render their SafeOut popups above them
         ForEach(players.indices.filter { players[$0].isSafeOutRequired }, id: \.self) { i in
             let player = players[i]
-            SafeOutView(vm: vm, player: player)
-                .position(positionForSafeOut(for: player.base, geo: geo))
-                .zIndex(2)
+            SafeOutView(player: player, onDecision: { player, decision in
+                vm.safeOutPerform(for: player, decision: decision)
+            })
+            .position(positionForSafeOut(for: player.base, geo: geo))
+            .zIndex(2)
         }
     }
 }
@@ -282,7 +285,7 @@ extension ScoringView {
         let homeIndices = players.indices.filter { players[$0].base == .scored }
         let position = position(for: player.base, geo: geo)
         if  player.base == .scored {
-            return CGPoint(x: position.x - CGFloat(homeIndices.firstIndex(of: i)! * 60), y: position.y)
+            return CGPoint(x: position.x - CGFloat(homeIndices.firstIndex(of: i)! * 47), y: position.y)
         }
         return position
     }
@@ -296,11 +299,11 @@ extension ScoringView {
         // Percentage anchors tuned to the softball background image.
         // Adjust these values if you need to fine-tune alignment.
         let anchors: [Base: (CGFloat, CGFloat)] = [
-            .home:   (0.50, 0.90),
-            .first:  (0.76, 0.61),
-            .second: (0.50, 0.41),
-            .third:  (0.24, 0.61),
-            .scored: (0.50, 0.87)
+            .home:   (0.50, 0.82),
+            .first:  (0.76, 0.68),
+            .second: (0.50, 0.46),
+            .third:  (0.24, 0.68),
+            .scored: (0.50, 0.82)
         ]
         let (px, py) = anchors[base] ?? (0.50, 0.88)
         return CGPoint(x: px * geo.size.width, y: py * geo.size.height)
@@ -310,9 +313,9 @@ extension ScoringView {
         let point = self.position(for: base, geo: geo)
         switch base {
         case .first, .second, .third:
-            return CGPoint(x: point.x, y: point.y - 60)
+            return CGPoint(x: point.x, y: point.y - 45)
         case .home, .scored:
-            return CGPoint(x: point.x, y: point.y + 60)
+            return CGPoint(x: point.x, y: point.y + 45)
         }
     }
     
@@ -348,17 +351,19 @@ extension ScoringView {
             barButton(icon: "arrow.uturn.right", title: "Redo") { vm.redo() }
         }
         .frame(maxWidth:.infinity)
+        .frame(height:60)
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(.ultraThickMaterial)
         .zIndex(6)
         .disabled(vm.gameState.basePlayers.contains(where: { $0.isSafeOutRequired }))
+        .offset(y:-15)
     }
 
     @ViewBuilder
     func barButton(icon: String, title: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            VStack(spacing: 6) {
+            VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.headline)
                     .foregroundColor(.white)
