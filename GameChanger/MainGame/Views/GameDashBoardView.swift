@@ -40,7 +40,8 @@ struct ScoringView: View {
         }.ignoresSafeArea()
     }
     
-    @ViewBuilder func getMainView() -> some View {
+    
+    func getMainView() -> some View {
         GeometryReader { geo in
                 ZStack {
                     // Bottom layer: field and all non-decision players
@@ -86,7 +87,7 @@ struct ScoringView: View {
         }*/
     }
     
-    @ViewBuilder
+    
     func optionSelection(geo:GeometryProxy) -> some View {
         Button {
             showOptions.toggle()
@@ -104,7 +105,7 @@ struct ScoringView: View {
 }
 
 extension ScoringView {
-    @ViewBuilder
+    
     func basesView(geo: GeometryProxy) -> some View {
         Group {
             BaseMarker().position(position(for: .home, geo: geo))
