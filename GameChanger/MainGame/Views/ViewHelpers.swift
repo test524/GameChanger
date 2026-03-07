@@ -13,7 +13,7 @@ import Foundation
 struct CustomTabView: View {
 
     @State private var selectedTab: Tab = .Score
-    @EnvironmentObject var vm: GameViewModel
+    //@Environment var vm: GameViewModel
 
     var body: some View {
         VStack(spacing: 0) {
@@ -29,11 +29,11 @@ struct CustomTabView: View {
                 case .PlayByPlay:
                     LoginView()
                 case .BoxScore:
-                    Text("Box Score").font(.largeTitle)
+                    BoxScoreView()
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .environmentObject(vm)
+            //.environment(vm)
         }//.background(.yellow)
         
     }

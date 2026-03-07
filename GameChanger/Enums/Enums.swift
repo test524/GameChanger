@@ -92,18 +92,18 @@ enum Position: String,Codable , CaseIterable{
         switch self {
         case .extraHitter: return HitPoint(x: 0.5, y: 0.6739)
             
-        case .pitcher: return HitPoint(x: 0.5, y: 0.62)
-        case .catcher: return HitPoint(x: 0.50, y: 1.0)
+        case .pitcher: return HitPoint(x: 0.5, y: 0.55)
+        case .catcher: return HitPoint(x: 0.50, y: 0.9)
             
-        case .firstBase: return HitPoint(x: 0.81, y: 0.59)
-        case .thirdBase: return HitPoint(x: 0.19, y: 0.59)
+        case .firstBase: return HitPoint(x: 0.81, y: 0.52)
+        case .thirdBase: return HitPoint(x: 0.19, y: 0.52)
             
-        case .secondBase: return HitPoint(x: 0.69, y: 0.50)
-        case .shortstop: return HitPoint(x: 0.31, y: 0.50)
+        case .secondBase: return HitPoint(x: 0.69, y: 0.44)
+        case .shortstop: return HitPoint(x: 0.31, y: 0.44)
             
-        case .leftField: return HitPoint(x: 0.15, y: 0.25)
-        case .centerField: return HitPoint(x: 0.50, y: 0.18)
-        case .rightField: return HitPoint(x: 0.85, y: 0.25)
+        case .leftField: return HitPoint(x: 0.15, y: 0.21)
+        case .centerField: return HitPoint(x: 0.50, y: 0.12)
+        case .rightField: return HitPoint(x: 0.85, y: 0.21)
         }
     }
     
@@ -116,5 +116,5 @@ struct HitPoint :Codable{
 
 #Preview {
     GameDashBoardView()
-        .environmentObject(GameViewModel())
+        .environment(GameViewModel())
 }

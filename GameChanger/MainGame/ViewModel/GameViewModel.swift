@@ -9,11 +9,11 @@ import Foundation
 import SwiftUI
 import Combine
 
-
+@Observable
 @MainActor
-final class GameViewModel : ObservableObject {
+final class GameViewModel {
 
-    @Published var gameState = GameState()
+    var gameState = GameState()
     
     private var undoStack: [GameState] = []
     private var redoStack: [GameState] = []

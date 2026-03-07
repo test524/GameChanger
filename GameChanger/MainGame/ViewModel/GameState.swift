@@ -19,7 +19,6 @@ struct GameState {
     var currentOrder = 0
     var gameAction:GameOption? = nil
     
-    
     var players: [Player] = [
         Player(base: .home, color: Color.red ,name: "Name:1M", order: 1, positionId: 1),   // P
         Player(base: .home, color: Color.blue ,name: "Name:2M", order: 2, positionId: 2),  // C

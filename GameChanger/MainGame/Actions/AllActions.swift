@@ -173,9 +173,10 @@ struct TripleAdvanceRule: GameRule, SafeOutDecidable {
 
 struct FielderChoiceRule: GameRule, SafeOutDecidable {
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
-        let key = action.title.lowercased()
-        return key == "fielderchoice" || key == "fielder's choice" || key == "fielderschoice"
+        let key = action.title
+        return key == "Fielder’s Choice"
     }
+    
     func execute(viewModel: GameViewModel) {
         withAnimation(.easeInOut) {
             viewModel.advancePlayers()
@@ -194,6 +195,7 @@ struct FielderChoiceRule: GameRule, SafeOutDecidable {
             print("Fielder's Choice logic complete; safe/out needed for 2nd and 3rd, then home")
         }
     }
+    
     func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, viewModel: GameViewModel) {
         if let index = viewModel.gameState.basePlayers.firstIndex(where: { $0.id == player.id }) {
             if decision == .out {

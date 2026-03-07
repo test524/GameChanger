@@ -1,0 +1,483 @@
+{
+    "mainEvent": "pitch",
+    "mainEventAction": "single",
+    "createdByUserId": 1,
+    "teamGameId": 1,
+    "gameId": 1,
+    "teamId": 5,
+    "pitchData": {
+        "actionId": "3-4-5-9",
+        "currentPitcher": 23,
+        "currentBatter": 123,
+        "fielderInvolved": [
+            {
+                "fieldedByPlayerId": 789,
+                "fieldedHitPoint": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        ],
+        "safeOrOut": {
+            "batter": {
+                "id": 101,
+                "name": "John Doe",
+                "onWhichBasePlayerRemoved": "SECOND",
+                "status": "OUT"
+            },
+            "runners": [
+                {
+                    "id": 102,
+                    "name": "Runner1",
+                    "onWhichBasePlayerRemoved": "FIRST",
+                    "status": "SAFE"
+                },
+                {
+                    "id": 103,
+                    "name": "Runner2",
+                    "onWhichBasePlayerRemoved": "THIRD",
+                    "status": "OUT"
+                }
+            ]
+        }
+    },
+    "scoring": {
+        "inningsNumber": 1,
+        "isBottom": false,
+        "outs": 0,
+        "strikes": 2,
+        "balls": 1,
+        "awayScore": 0,
+        "homeScore": 0,
+        "awayTeam": {
+            "currentBatterIndex": 7,
+            "outs": 0,
+            "teamId": 4,
+            "teamName": "Away Warriors",
+            "teamScore": 2
+        },
+        "homeTeam": {
+            "currentBatterIndex": 2,
+            "outs": 0,
+            "teamId": 5,
+            "teamName": "Home Heroes",
+            "teamScore": 0
+        },
+        "baseOccupancy": {
+            "firstBase": {
+                "atBats": 0,
+                "firstName": "Ryan",
+                "hits": 0,
+                "jerseyNumber": "9",
+                "lastName": "Davis",
+                "pitchesThrown": 0,
+                "playerId": 6,
+                "playerName": "Ryan Davis",
+                "order": 1,
+                "positionId": "Shortstop"
+            },
+            "thirdBase": {
+                "atBats": 0,
+                "firstName": "Chris",
+                "hits": 0,
+                "jerseyNumber": "7",
+                "lastName": "Williams",
+                "pitchesThrown": 0,
+                "playerId": 4,
+                "playerName": "Chris Williams",
+                "order": 1,
+                "positionId": "Second Base"
+            }
+        },
+        "currentBatter": {
+            "atBats": 0,
+            "firstName": "Matt",
+            "hits": 0,
+            "jerseyNumber": "4",
+            "lastName": "Miller",
+            "pitchesThrown": 0,
+            "playerId": 2,
+            "playerName": "Matt Miller",
+            "order": 1,
+            "positionId": "Left Field"
+        },
+        "currentPitcher": {
+            "atBats": 0,
+            "firstName": "Tom",
+            "hits": 0,
+            "jerseyNumber": "11",
+            "lastName": "Anderson",
+            "pitchesThrown": 8,
+            "playerId": 1,
+            "playerName": "Tom Anderson",
+            "order": 1,
+            "positionId": "Pitcher"
+        },
+        "awayLineUp": [
+            {
+                "atBats": 0,
+                "firstName": "John",
+                "hits": 0,
+                "jerseyNumber": "10",
+                "lastName": "Doe",
+                "pitchesThrown": 0,
+                "playerId": 1,
+                "playerName": "John Doe",
+                "order": 1,
+                "positionId": "Pitcher"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Mike",
+                "hits": 0,
+                "jerseyNumber": "12",
+                "lastName": "Smith",
+                "pitchesThrown": 0,
+                "playerId": 2,
+                "playerName": "Mike Smith",
+                "order": 1,
+                "positionId": "Catcher"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Jake",
+                "hits": 0,
+                "jerseyNumber": "8",
+                "lastName": "Johnson",
+                "pitchesThrown": 0,
+                "playerId": 3,
+                "playerName": "Jake Johnson",
+                "order": 1,
+                "positionId": "First Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Chris",
+                "hits": 0,
+                "jerseyNumber": "7",
+                "lastName": "Williams",
+                "pitchesThrown": 0,
+                "playerId": 4,
+                "playerName": "Chris Williams",
+                "order": 1,
+                "positionId": "Second Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "David",
+                "hits": 0,
+                "jerseyNumber": "6",
+                "lastName": "Brown",
+                "pitchesThrown": 0,
+                "playerId": 5,
+                "playerName": "David Brown",
+                "order": 1,
+                "positionId": "Third Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Ryan",
+                "hits": 0,
+                "jerseyNumber": "9",
+                "lastName": "Davis",
+                "pitchesThrown": 0,
+                "playerId": 6,
+                "playerName": "Ryan Davis",
+                "order": 1,
+                "positionId": "Shortstop"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Matt",
+                "hits": 0,
+                "jerseyNumber": "4",
+                "lastName": "Miller",
+                "pitchesThrown": 0,
+                "playerId": 7,
+                "playerName": "Matt Miller",
+                "order": 1,
+                "positionId": "Left Field"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Josh",
+                "hits": 0,
+                "jerseyNumber": "5",
+                "lastName": "Garcia",
+                "pitchesThrown": 0,
+                "playerId": 8,
+                "playerName": "Josh Garcia",
+                "order": 1,
+                "positionId": "Center Field"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Kevin",
+                "hits": 0,
+                "jerseyNumber": "3",
+                "lastName": "Martinez",
+                "pitchesThrown": 0,
+                "playerId": 9,
+                "playerName": "Kevin Martinez",
+                "order": 1,
+                "positionId": "Right Field"
+            }
+        ],
+        "homeLineUp": [
+            {
+                "atBats": 0,
+                "firstName": "Tom",
+                "hits": 0,
+                "jerseyNumber": "11",
+                "lastName": "Anderson",
+                "pitchesThrown": 8,
+                "playerId": 10,
+                "playerName": "Tom Anderson",
+                "order": 1,
+                "positionId": "Pitcher"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Steve",
+                "hits": 0,
+                "jerseyNumber": "13",
+                "lastName": "Thomas",
+                "pitchesThrown": 0,
+                "playerId": 11,
+                "playerName": "Steve Thomas",
+                "order": 1,
+                "positionId": "Catcher"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Brian",
+                "hits": 0,
+                "jerseyNumber": "14",
+                "lastName": "Moore",
+                "pitchesThrown": 0,
+                "playerId": 12,
+                "playerName": "Brian Moore",
+                "order": 1,
+                "positionId": "First Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Jason",
+                "hits": 0,
+                "jerseyNumber": "15",
+                "lastName": "Jackson",
+                "pitchesThrown": 0,
+                "playerId": 13,
+                "playerName": "Jason Jackson",
+                "order": 1,
+                "positionId": "Second Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Andrew",
+                "hits": 0,
+                "jerseyNumber": "16",
+                "lastName": "White",
+                "pitchesThrown": 0,
+                "playerId": 14,
+                "playerName": "Andrew White",
+                "order": 1,
+                "positionId": "Third Base"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Eric",
+                "hits": 0,
+                "jerseyNumber": "17",
+                "lastName": "Harris",
+                "pitchesThrown": 0,
+                "playerId": 15,
+                "playerName": "Eric Harris",
+                "order": 1,
+                "positionId": "Shortstop"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Kyle",
+                "hits": 0,
+                "jerseyNumber": "18",
+                "lastName": "Martin",
+                "pitchesThrown": 0,
+                "playerId": 16,
+                "playerName": "Kyle Martin",
+                "order": 1,
+                "positionId": "Left Field"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Nick",
+                "hits": 0,
+                "jerseyNumber": "19",
+                "lastName": "Thompson",
+                "pitchesThrown": 0,
+                "playerId": 17,
+                "playerName": "Nick Thompson",
+                "order": 1,
+                "positionId": "Center Field"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Tyler",
+                "hits": 0,
+                "jerseyNumber": "20",
+                "lastName": "Rodriguez",
+                "pitchesThrown": 0,
+                "playerId": 18,
+                "playerName": "Tyler Rodriguez",
+                "order": 1,
+                "positionId": "Right Field"
+            }
+        ],
+        "awayLineUpBench": [
+            {
+                "atBats": 0,
+                "firstName": "Ethan",
+                "hits": 0,
+                "jerseyNumber": "21",
+                "lastName": "Hall",
+                "pitchesThrown": 0,
+                "playerId": 19,
+                "playerName": "Ethan Hall",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Luke",
+                "hits": 0,
+                "jerseyNumber": "22",
+                "lastName": "Allen",
+                "pitchesThrown": 0,
+                "playerId": 20,
+                "playerName": "Luke Allen",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Sean",
+                "hits": 0,
+                "jerseyNumber": "23",
+                "lastName": "Young",
+                "pitchesThrown": 0,
+                "playerId": 21,
+                "playerName": "Sean Young",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Brandon",
+                "hits": 0,
+                "jerseyNumber": "24",
+                "lastName": "King",
+                "pitchesThrown": 0,
+                "playerId": 22,
+                "playerName": "Brandon King",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Dylan",
+                "hits": 0,
+                "jerseyNumber": "25",
+                "lastName": "Wright",
+                "pitchesThrown": 0,
+                "playerId": 23,
+                "playerName": "Dylan Wright",
+                "order": 1,
+                "positionId": "EH"
+            }
+        ],
+        "homeLineUpBench": [
+            {
+                "atBats": 0,
+                "firstName": "Logan",
+                "hits": 0,
+                "jerseyNumber": "26",
+                "lastName": "Scott",
+                "pitchesThrown": 0,
+                "playerId": 24,
+                "playerName": "Logan Scott",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Nathan",
+                "hits": 0,
+                "jerseyNumber": "27",
+                "lastName": "Green",
+                "pitchesThrown": 0,
+                "playerId": 25,
+                "playerName": "Nathan Green",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Adam",
+                "hits": 0,
+                "jerseyNumber": "28",
+                "lastName": "Baker",
+                "pitchesThrown": 0,
+                "playerId": 26,
+                "playerName": "Adam Baker",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Zach",
+                "hits": 0,
+                "jerseyNumber": "29",
+                "lastName": "Gonzalez",
+                "pitchesThrown": 0,
+                "playerId": 27,
+                "playerName": "Zach Gonzalez",
+                "order": 1,
+                "positionId": "EH"
+            },
+            {
+                "atBats": 0,
+                "firstName": "Cameron",
+                "hits": 0,
+                "jerseyNumber": "30",
+                "lastName": "Nelson",
+                "pitchesThrown": 0,
+                "playerId": 28,
+                "playerName": "Cameron Nelson",
+                "order": 1,
+                "positionId": "EH"
+            }
+        ],
+        "playByPlay": {
+            "batterId": 2,
+            "batterName": "#99 Jane Smith",
+            "mainEvent": "atBat",
+            "mainMessage": "#99 Jane Smith atBat",
+            "plays": [
+                {
+                    "name": "BALL",
+                    "Message": "ball"
+                },
+                {
+                    "name": "STRIKE",
+                    "Message": "calledstrike"
+                },
+                {
+                    "name": "SINGLE",
+                    "Message": "#99 Jane Smith single on ground ball to 'Player postion'(fielder) ",
+                    "fielder": ""
+                }
+            ]
+        }
+    }
+}
+

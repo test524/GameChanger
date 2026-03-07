@@ -19,7 +19,7 @@ struct GameDashBoardView: View {
 struct ScoringView: View {
     
     //@ObservedObject var vm: GameViewModel
-    @EnvironmentObject var vm: GameViewModel
+    @Environment(GameViewModel.self) var vm
     
     @State private var dragOffsets: [UUID: CGSize] = [:]
     @State private var hoverPlayerID: UUID?
@@ -292,7 +292,7 @@ extension ScoringView {
     }
     
     func pitchBallPosition(geo: GeometryProxy) -> CGPoint {
-        let (px,py) = (0.50,0.71)
+        let (px,py) = (0.50,0.63)
         return CGPoint(x: px * geo.size.width, y: py * geo.size.height)
     }
     
@@ -301,9 +301,9 @@ extension ScoringView {
         // Adjust these values if you need to fine-tune alignment.
         let anchors: [Base: (CGFloat, CGFloat)] = [
             .home:   (0.50, 0.82),
-            .first:  (0.76, 0.68),
-            .second: (0.50, 0.46),
-            .third:  (0.24, 0.68),
+            .first:  (0.76, 0.60),
+            .second: (0.50, 0.40),
+            .third:  (0.24, 0.60),
             .scored: (0.50, 0.82)
         ]
         let (px, py) = anchors[base] ?? (0.50, 0.88)
@@ -381,6 +381,6 @@ extension ScoringView {
 
 #Preview {
     GameDashBoardView()
-        .environmentObject(GameViewModel())
+        .environment(GameViewModel())
 }
 

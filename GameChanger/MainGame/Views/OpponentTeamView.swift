@@ -11,7 +11,7 @@ import SwiftUI
 
 struct OpponentTeamView: View {
     
-    @EnvironmentObject var viewModel: GameViewModel
+    @Environment(GameViewModel.self) var viewModel
 
     var body: some View {
         NavigationStack {
@@ -41,5 +41,5 @@ struct OpponentTeamView: View {
 
 #Preview {
     OpponentTeamView()
-        .environmentObject(GameViewModel())
+        .environment(GameViewModel())
 }

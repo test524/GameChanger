@@ -10,7 +10,7 @@ import SwiftUI
 
 struct GameOptionsView: View {
     
-    @ObservedObject var vm: GameViewModel
+    var vm: GameViewModel
     @Environment(\.dismiss) var dismiss
     
     var body: some View {

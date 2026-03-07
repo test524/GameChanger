@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ScoreCardView: View {
     
-    @EnvironmentObject var vm: GameViewModel
+    @Environment(GameViewModel.self) var vm
     
     var body: some View {
         VStack {
@@ -98,7 +98,7 @@ struct ScoreCardView: View {
 
 #Preview {
     ScoreCardView()
-        .environmentObject(GameViewModel())
+        .environment(GameViewModel())
 }
 
 struct GameInfo : View {
@@ -220,3 +220,5 @@ struct GameCountView: View {
         }.padding(.bottom,5)
     }
 }
+
+

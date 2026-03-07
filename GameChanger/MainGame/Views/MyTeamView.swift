@@ -11,7 +11,7 @@ import SwiftUI
 
 struct MyTeamView: View {
     
-    @EnvironmentObject var viewModel: GameViewModel
+    @Environment(GameViewModel.self) var viewModel
     @State private var showPositionPicker: Bool = false
     @State private var selectedPlayerID: UUID? = nil
     
@@ -161,6 +161,6 @@ struct PositionPickerView: View {
 
 #Preview {
     MyTeamView()
-        .environmentObject(GameViewModel())
+        .environment(GameViewModel())
 }
 
