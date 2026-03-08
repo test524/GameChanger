@@ -30,17 +30,25 @@ final class GameViewModel {
         rules: [
             BallActionRule(),
             StrikeActionRule(),
+            SwingAndMissRule(),
+            FoulBallRule(),
             SingleAdvanceRule(),
             DoubleAdvanceRule(),
             TripleAdvanceRule(),
             FielderChoiceRule(),
-            HitByPitch()
+            HitByPitch(),
+            IntensionalBallRule(),
+            IntentionalWalkRule(),
+            CIntenerfaceRule()
         ]
     )
     
     func perform(_ action: GameOption) {
+        print("Selected Action:",action.title)
         saveState()
         gameState.gameAction = action
+        //let generator = UIImpactFeedbackGenerator(style: .light)
+        //generator.impactOccurred()
         withAnimation {
             engine.process(action: action , viewModel: self)
         }
@@ -73,6 +81,75 @@ final class GameViewModel {
             }
         }
     }
+    
+    func advancePlayersIfEmpty() {
+        
+        // Determine current occupancy
+        let has1st = gameState.basePlayers.contains { $0.base == .first }
+        let has2nd = gameState.basePlayers.contains { $0.base == .second }
+        let has3rd = gameState.basePlayers.contains { $0.base == .third }
+
+        var didScore = false
+        withAnimation(.spring) {
+            
+            // If bases loaded → runner on 3rd scores
+            if has1st == true && has2nd == true && has3rd == true {
+                //if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .third }) {
+                self.advancePlayers()
+                //}
+                return
+            }
+            
+            // Move runners in reverse order (3rd -> 2nd -> 1st)
+            
+            // Move 2B to 3B if forced
+            if has1st == true && has2nd == true {
+                //thirdBase = secondBase
+                if let thirdIndex = gameState.basePlayers.firstIndex(where: { $0.base == .second }) {
+                    didScore = true
+                    gameState.basePlayers[thirdIndex].base = .third
+                }
+                //secondBase = firstBase
+                if let thirdIndex = gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    gameState.basePlayers[thirdIndex].base = .second
+                }
+                //firstBase = batter
+                if let thirdIndex = gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    gameState.basePlayers[thirdIndex].base = .first
+                }
+                return
+            }
+
+            
+            // Move 1B to 2B if forced
+            if has1st == true {
+                //secondBase = firstBase
+                //firstBase = batter
+                if let thirdIndex = gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
+                    gameState.basePlayers[thirdIndex].base = .second
+                }
+                //firstBase = batter
+                if let thirdIndex = gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                    gameState.basePlayers[thirdIndex].base = .first
+                }
+                return
+            }
+            
+            // If first base empty
+            //firstBase = batter
+            if let homeIndex = gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                gameState.basePlayers[homeIndex].base = .first
+            }
+        
+        } completion: {
+            if didScore {
+                self.removeHomePlayer()
+            }
+            // Bring in the next batter
+            self.addHomePlayer()
+        }
+    }
+
     
     func changeInning() {
         if gameState.isTopInning {

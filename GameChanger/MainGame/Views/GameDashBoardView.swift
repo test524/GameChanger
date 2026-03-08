@@ -301,9 +301,9 @@ extension ScoringView {
         // Adjust these values if you need to fine-tune alignment.
         let anchors: [Base: (CGFloat, CGFloat)] = [
             .home:   (0.50, 0.82),
-            .first:  (0.76, 0.60),
+            .first:  (0.76, 0.59),
             .second: (0.50, 0.40),
-            .third:  (0.24, 0.60),
+            .third:  (0.24, 0.59),
             .scored: (0.50, 0.82)
         ]
         let (px, py) = anchors[base] ?? (0.50, 0.88)

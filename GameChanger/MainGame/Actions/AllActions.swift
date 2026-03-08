@@ -287,7 +287,7 @@ struct SwingAndMissRule: GameRule {
     private let maxOuts = 2
     
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
-        action.title.lowercased() == "swing and miss"
+        action.title == "Swing & Miss"
     }
     
     func execute(viewModel: GameViewModel) {
@@ -316,7 +316,7 @@ struct SwingAndMissRule: GameRule {
     }
 }
 
-struct FoulBallRule: GameRule {
+struct FoulBallRule: GameRule{
     
     private let maxStrikes = 2
     
@@ -342,6 +342,10 @@ struct HitByPitch: GameRule {
         return key == "Hit by Pitch" || key == "hbp"
     }
     func execute(viewModel: GameViewModel) {
+        
+        viewModel.advancePlayersIfEmpty()
+        
+        /*
         // Determine current occupancy
         let has1st = viewModel.gameState.basePlayers.contains { $0.base == .first }
         let has2nd = viewModel.gameState.basePlayers.contains { $0.base == .second }
@@ -406,6 +410,50 @@ struct HitByPitch: GameRule {
             // Bring in the next batter
             viewModel.addHomePlayer()
         }
+        */
+        
     }
 }
+
+struct IntensionalBallRule : GameRule {
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title.lowercased() == "Intentional Ball"
+    }
+    func execute(viewModel: GameViewModel) {
+        viewModel.gameState.balls += 1
+        if viewModel.gameState.balls >= 4 {
+            
+            // Reset count after out
+            viewModel.gameState.strikes = 0
+            viewModel.gameState.balls = 0
+            
+            withAnimation(.spring) {
+                viewModel.advancePlayers()
+            }completion: {
+                viewModel.removeHomePlayer()
+                viewModel.addHomePlayer()
+            }
+        }
+    }
+}
+
+struct IntentionalWalkRule : GameRule {
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title == "Intentional Walk"
+    }
+    func execute(viewModel: GameViewModel) {
+        viewModel.advancePlayersIfEmpty()
+    }
+}
+
+struct CIntenerfaceRule : GameRule {
+    func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
+        action.title == "C. Interference"
+    }
+    func execute(viewModel: GameViewModel) {
+        viewModel.advancePlayersIfEmpty()
+    }
+}
+
+
 
