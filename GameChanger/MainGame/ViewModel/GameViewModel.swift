@@ -23,9 +23,7 @@ final class GameViewModel {
         undoStack.append(gameState)
         redoStack.removeAll() // Clear redo when new action happens
     }
-    
-    var options = GameOptionsStore.shared.options
-    
+        
     private var engine = RulesEngine(
         rules: [
             BallActionRule(),

@@ -97,7 +97,9 @@ struct ScoringView: View {
                 .fontWeight(.heavy)
         }
         .fullScreenCover(isPresented: $showOptions) {
-            GameOptionsView(vm: vm)
+            GameOptionsView(onSelect: {selectedOption in
+                vm.perform(selectedOption)
+            })
             //.presentationBackground(Color.black.opacity(0.3))
         }.position(pitchBallPosition(geo: geo))
     }

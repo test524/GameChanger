@@ -8,18 +8,24 @@
 import Foundation
 import SwiftUI
 
+
 struct GameOptionsView: View {
     
-    var vm: GameViewModel
+    @State var vm = GameOptionsViewModel(service: GameOptionsOfflineStore())
+    let onSelect: (GameOption) -> Void
+
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
         NavigationStack {
-            GameOptionsListView(
-                options: vm.options,
-                onSelect: handleSelection
-            )
+            GameOptionsListView(options: vm.options, onSelect: handleSelection)
             .navigationTitle("Game Options")
+        }.task {
+            vm.getOptions()
+        }.overlay {
+            if vm.options.isEmpty == true {
+                ProgressView()
+            }
         }
     }
     
@@ -27,7 +33,8 @@ struct GameOptionsView: View {
         dismiss()
         Task {
             try? await Task.sleep(for: .seconds(0.2))
-            vm.perform(option)
+            //vm.perform(option)
+            onSelect(option)
         }
     }
     
@@ -37,6 +44,7 @@ struct GameOptionsListView: View {
     
     let options: [GameOption]
     let onSelect: (GameOption) -> Void
+    
     
     var body: some View {
         List(options) { option in
@@ -60,6 +68,7 @@ struct GameOptionsListView: View {
                 }
             }
         }.listStyle(.plain)
+        
     }
 }
 
