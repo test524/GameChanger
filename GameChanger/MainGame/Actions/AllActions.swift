@@ -18,12 +18,24 @@ protocol SafeOutDecidable {
     func resolveSafeOutDecision(for player: Player, decision: SafeOutDecision, viewModel: GameViewModel)
 }
 
+protocol PlayByPlayProtocol {
+    func createPlayByPlayMessage(viewModel: GameViewModel)
+}
+
 struct RulesEngine {
     private let rules: [GameRule]
     init(rules: [GameRule]) {
            self.rules = rules
     }
     func process(action: GameOption, viewModel: GameViewModel) {
+        //Message
+        for rule in rules {
+            if rule.applies(to: action, viewModel: viewModel),
+               let playByPlay = rule as? PlayByPlayProtocol {
+                playByPlay.createPlayByPlayMessage(viewModel: viewModel)
+            }
+        }
+        //Action
         for rule in rules {
             if rule.applies(to: action, viewModel: viewModel) {
                  rule.execute(viewModel: viewModel)
@@ -40,10 +52,74 @@ struct RulesEngine {
     }
 }
 
-struct SingleAdvanceRule: GameRule, SafeOutDecidable {
+struct SingleAdvanceRule: GameRule, SafeOutDecidable, PlayByPlayProtocol {
+        
+    func createPlayByPlayMessage(viewModel: GameViewModel) {
+        
+        let gameState = viewModel.gameState
+        
+        guard let batter = gameState.basePlayers.first(where: {$0.base == .home}) else {return}
+        var message = batter.name
+        message += " singles"
+
+        //Fielder
+        /*if let field = event.field {
+            message += " to \(field.rawValue)"
+        }*/
+
+        message += "."
+        
+        var movements: [BaseMovement] = []
+
+        // Runner on 3rd scores
+        if let runner = gameState.basePlayers.first(where: {$0.base == .third}) {
+            movements.append(
+                BaseMovement(player: runner, from: .third, to: nil, scored: true)
+            )
+        }
+
+        // Runner on 2nd scores
+        if let runner = gameState.basePlayers.first(where: {$0.base == .second}) {
+            movements.append(
+                BaseMovement(player: runner, from: .second, to: nil, scored: false)
+            )
+        }
+
+        // Runner on 1st to 2nd
+        if let runner = gameState.basePlayers.first(where: {$0.base == .first}) {
+            movements.append(
+                BaseMovement(player: runner, from: .first, to: .second, scored: false)
+            )
+        }
+
+        // Batter to 1st
+        movements.append(
+            BaseMovement(player: batter, from: .home, to: .first, scored: false)
+        )
+        
+        if !movements.isEmpty {
+            let runnerText = movements.map { move -> String in
+                if move.scored {
+                    return "\(move.player.name) scores"
+                }
+                if let to = move.to {
+                    return "\(move.player.name) advances to \(to.rawValue)"
+                }
+                return ""
+            }
+            message += " " + runnerText.joined(separator: ", ") + "."
+        }
+        
+        print("######")
+        print(message)
+        print("######")
+                
+    }
+    
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
         action.title.lowercased() == "single"
     }
+    
     func execute(viewModel: GameViewModel) {
         withAnimation(.spring) {
             viewModel.advancePlayers()
@@ -226,25 +302,23 @@ struct FielderChoiceRule: GameRule, SafeOutDecidable {
 }
 
 struct BallActionRule: GameRule {
+
+    private let maxBalls = 4
+
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
         action.title.lowercased() == "ball"
     }
+
     func execute(viewModel: GameViewModel) {
         viewModel.gameState.balls += 1
-        if viewModel.gameState.balls >= 4 {
-            
-            // Reset count after out
-            viewModel.gameState.strikes = 0
-            viewModel.gameState.balls = 0
-            
-            withAnimation(.spring) {
-                viewModel.advancePlayers()
-            }completion: {
-                print("Ball action completed")
-                viewModel.removeHomePlayer()
-                viewModel.addHomePlayer()
-            }
+
+        guard viewModel.gameState.balls >= maxBalls else {
+            return
         }
+
+        viewModel.gameState.strikes = 0
+        viewModel.gameState.balls = 0
+        viewModel.advancePlayersIfEmpty()
     }
 }
 
@@ -342,76 +416,7 @@ struct HitByPitch: GameRule {
         return key == "Hit by Pitch" || key == "hbp"
     }
     func execute(viewModel: GameViewModel) {
-        
         viewModel.advancePlayersIfEmpty()
-        
-        /*
-        // Determine current occupancy
-        let has1st = viewModel.gameState.basePlayers.contains { $0.base == .first }
-        let has2nd = viewModel.gameState.basePlayers.contains { $0.base == .second }
-        let has3rd = viewModel.gameState.basePlayers.contains { $0.base == .third }
-
-        var didScore = false
-        withAnimation(.spring) {
-            
-            // If bases loaded → runner on 3rd scores
-            if has1st == true && has2nd == true && has3rd == true {
-                //if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .third }) {
-                viewModel.advancePlayers()
-                //}
-                return
-            }
-            
-            // Move runners in reverse order (3rd -> 2nd -> 1st)
-            
-            // Move 2B to 3B if forced
-            if has1st == true && has2nd == true {
-                //thirdBase = secondBase
-                if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .second }) {
-                    didScore = true
-                    viewModel.gameState.basePlayers[thirdIndex].base = .third
-                }
-                //secondBase = firstBase
-                if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
-                    viewModel.gameState.basePlayers[thirdIndex].base = .second
-                }
-                //firstBase = batter
-                if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
-                    viewModel.gameState.basePlayers[thirdIndex].base = .first
-                }
-                return
-            }
-
-            
-            // Move 1B to 2B if forced
-            if has1st == true {
-                //secondBase = firstBase
-                //firstBase = batter
-                if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .first }) {
-                    viewModel.gameState.basePlayers[thirdIndex].base = .second
-                }
-                //firstBase = batter
-                if let thirdIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
-                    viewModel.gameState.basePlayers[thirdIndex].base = .first
-                }
-                return
-            }
-            
-            // If first base empty
-            //firstBase = batter
-            if let homeIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
-                viewModel.gameState.basePlayers[homeIndex].base = .first
-            }
-        
-        } completion: {
-            if didScore {
-                viewModel.removeHomePlayer()
-            }
-            // Bring in the next batter
-            viewModel.addHomePlayer()
-        }
-        */
-        
     }
 }
 
@@ -454,6 +459,5 @@ struct CIntenerfaceRule : GameRule {
         viewModel.advancePlayersIfEmpty()
     }
 }
-
 
 

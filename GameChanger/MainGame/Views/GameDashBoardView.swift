@@ -40,7 +40,6 @@ struct ScoringView: View {
         }.ignoresSafeArea()
     }
     
-    
     func getMainView() -> some View {
         GeometryReader { geo in
                 ZStack {
