@@ -14,6 +14,7 @@ struct BaseMovement {
     let to: Base?
     let scored: Bool
 }
+//print(Base.third.next())
 
 enum Base: Int {
     case home = 0, first, second, third, scored
