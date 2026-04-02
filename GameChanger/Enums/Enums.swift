@@ -8,6 +8,13 @@
 import Foundation
 import SwiftUI
 
+struct BaseMovement {
+    let player: Player
+    let from: Base
+    let to: Base?
+    let scored: Bool
+}
+
 enum Base: Int {
     case home = 0, first, second, third, scored
 
@@ -114,7 +121,3 @@ struct HitPoint :Codable{
     let y: CGFloat
 }
 
-#Preview {
-    GameDashBoardView()
-        .environment(GameViewModel())
-}
