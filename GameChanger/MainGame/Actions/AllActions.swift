@@ -268,6 +268,12 @@ struct StrikeActionRule: GameRule {
             viewModel.gameState.strikes = 0
             viewModel.gameState.balls = 0
             
+            // Remove the struck-out batter and bring in the next one
+            if let homeIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                viewModel.gameState.basePlayers.remove(at: homeIndex)
+            }
+            viewModel.addHomePlayer()
+            
             // 3️⃣ If outs limit reached → Change inning
             if viewModel.gameState.outs > 2 {
                 
@@ -304,8 +310,11 @@ struct SwingAndMissRule: GameRule {
             viewModel.gameState.strikes = 0
             viewModel.gameState.balls = 0
             
-            // Move batting order
-            viewModel.gameState.currentOrder += 1
+            // Remove the struck-out batter and bring in the next one
+            if let homeIndex = viewModel.gameState.basePlayers.firstIndex(where: { $0.base == .home }) {
+                viewModel.gameState.basePlayers.remove(at: homeIndex)
+            }
+            viewModel.addHomePlayer()
             
             // 3️⃣ If inning over
             if viewModel.gameState.outs > maxOuts {
@@ -417,7 +426,7 @@ struct HitByPitch: GameRule {
 
 struct IntensionalBallRule : GameRule {
     func applies(to action: GameOption, viewModel: GameViewModel) -> Bool {
-        action.title.lowercased() == "Intentional Ball"
+        action.title.lowercased() == "intentional ball"
     }
     func execute(viewModel: GameViewModel) {
         viewModel.gameState.balls += 1

@@ -348,7 +348,6 @@ extension ScoringView {
             Spacer()
             barButton(icon: "forward.end.fill", title: "Skip") { vm.skip() }
             barButton(icon: "repeat", title: "Repeat") { vm.repeatLastAction() }
-            barButton(icon: "repeat", title: "Repeat") { vm.repeatLastAction() }
             Spacer()
             barButton(icon: "arrow.uturn.left", title: "Undo") { vm.undo() }
             barButton(icon: "arrow.uturn.right", title: "Redo") { vm.redo() }
