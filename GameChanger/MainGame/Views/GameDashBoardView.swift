@@ -147,30 +147,27 @@ extension ScoringView {
     @ViewBuilder
     func playersView(geo: GeometryProxy) -> some View {
         let players = vm.gameState.basePlayers
-        ForEach(players.indices.filter { !players[$0].isSafeOutRequired }, id: \.self) { i in
-            let player = players[i]
+        ForEach(players.filter { !$0.isSafeOutRequired }) { player in
+            let i = players.firstIndex(where: { $0.id == player.id }) ?? 0
             PlayerView(player: player)
                 .position(self.getPoint(i: i, player: player, geo: geo))
                 .offset(dragOffsets[player.id] ?? .zero)
                 .gesture(
-                    DragGesture()
+                    DragGesture(coordinateSpace: .named("field"))
                         .onChanged { value in
-                            dragOffsets[player.id] = value.translation
-                            
-                            let start = position(for: player.base, geo: geo)
-                            let current = CGPoint(
-                                x: start.x + value.translation.width,
-                                y: start.y + value.translation.height
+                            let start = self.getPoint(i: i, player: player, geo: geo)
+                            dragOffsets[player.id] = CGSize(
+                                width: value.location.x - start.x,
+                                height: value.location.y - start.y
                             )
                             
                             hoverPlayerID = player.id
-                            hoverBase = nearestBase(to: current, geo: geo)
+                            hoverBase = nearestBase(to: value.location, geo: geo)
                         }
                         .onEnded { value in
-                            handleDrop(player: player, value: value, geo: geo)
+                            handleDrop(player: player, location: value.location, geo: geo)
                         }
                 )
-                //.zIndex(hoverPlayerID == player.id ? 1.5 : (player.base == .home || player.base == .scored ? 1 : 0))
         }
     }
 }
@@ -201,19 +198,12 @@ extension ScoringView {
 extension ScoringView {
     
     func handleDrop(player: Player,
-                    value: DragGesture.Value,
+                    location: CGPoint,
                     geo: GeometryProxy) {
         
-        let start = position(for: player.base, geo: geo)
-        let dropPoint = CGPoint(
-            x: start.x + value.translation.width,
-            y: start.y + value.translation.height
-        )
-    
-        // Check popup overlap
-        print("safeFrame:", decisionFrames[.safe] ?? .zero)
-        print("dropPoint:", dropPoint)
+        let dropPoint = location
         
+        // Check popup overlap
         if let safeFrame = decisionFrames[.safe],
            safeFrame.contains(dropPoint) {
             vm.safeOutPerform(for: player, decision: .safe)
@@ -224,7 +214,11 @@ extension ScoringView {
         }
         else {
             // normal base move
-            let nearest = nearestBase(to: dropPoint, geo: geo)
+            var nearest = nearestBase(to: dropPoint, geo: geo)
+            // If a runner (not the batter) is dragged to home, treat as scored
+            if nearest == .home && player.base != .home {
+                nearest = .scored
+            }
             if let idx = vm.gameState.basePlayers.firstIndex(where: { $0.id == player.id }) {
                 withAnimation {
                     vm.gameState.basePlayers[idx].base = nearest
@@ -328,7 +322,6 @@ extension ScoringView {
             (.first, position(for: .first, geo: geo)),
             (.second, position(for: .second, geo: geo)),
             (.third, position(for: .third, geo: geo)),
-            (.scored, position(for: .scored, geo: geo))
         ]
         let nearest = positions.min { lhs, rhs in
             let dl = hypot(lhs.1.x - point.x, lhs.1.y - point.y)
