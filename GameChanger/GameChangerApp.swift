@@ -6,15 +6,25 @@
 //
 
 import SwiftUI
+import Combine
 
 @main
 struct GameChangerApp: App {
-    @State var vm = GameViewModel()
+    @State var gameVM = GameViewModel()
+    @State var auth = AuthenticationService()
     var body: some Scene {
         WindowGroup {
-            GameDashBoardView()
-                .environment(vm)
+            Group {
+                if auth.isLoggedIn == false {
+                    LoginView()
+                }else{
+                    GamePlayView()
+                     .environment(gameVM)
+                }
+            }
+            .environment(auth)
         }
     }
 }
+
 

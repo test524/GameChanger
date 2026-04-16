@@ -60,8 +60,7 @@ extension Position {
     }
 }
 
-
-enum Position: String,Codable , CaseIterable{
+enum Position: String,Codable , CaseIterable {
     case pitcher = "P"
     case catcher = "C"
     case firstBase = "1B"
@@ -114,7 +113,4 @@ struct HitPoint :Codable{
     let y: CGFloat
 }
 
-#Preview {
-    GameDashBoardView()
-        .environment(GameViewModel())
-}
+
